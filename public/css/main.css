@@ -1,0 +1,38 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 18 апр. 2020 г., 17:07:02
+    Author     : igorb
+*/
+
+body{
+    margin-top: 40px;
+}
+
+.question-edit-container{
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 5px;
+}
+
+.question-edit-title-container{
+    display: flex;
+    justify-content: space-between;
+}
+.delete-answer{
+    margin: 10px 0px 10px 10px;
+    color: darkgrey;
+}
+.delete-question{
+    color: darkgrey;
+}
+.delete-answer:hover, .delete-question:hover{
+    color: red;
+}
+.add-question-btn{
+    margin: 20px 0 20px calc(50% - 77px);
+}
