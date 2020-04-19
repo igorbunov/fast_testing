@@ -13,10 +13,10 @@ body{
 }
 
 .question-edit-container{
-    border: 1px solid #ced4da;
+    border: 2px solid #ced4da;
     border-radius: 5px;
     padding: 20px;
-    margin-bottom: 5px;
+    margin-bottom: 20px;
 }
 
 .question-edit-title-container{
@@ -25,14 +25,27 @@ body{
 }
 .delete-answer{
     margin: 10px 0px 10px 10px;
-    color: darkgrey;
-}
-.delete-question{
-    color: darkgrey;
-}
-.delete-answer:hover, .delete-question:hover{
-    color: red;
+    color: #dc3545;
 }
 .add-question-btn{
-    margin: 20px 0 20px calc(50% - 77px);
+    margin: 20px 0 20px calc(50% - 96px);
+}
+.add-answer-btn{
+    width: 38px;
+    height: 38px;
+    padding: 7px 7px 7px 12px;
+    border-radius: 5px;
+    margin-left: calc(50% - 19px);
+}
+.question-main-buttons-container{
+    display: flex;
+    justify-content: space-between;
+}
+
+.disabled-container {
+    pointer-events: none;
+    opacity: 0.4;
+}
+.questions-container{
+    margin-top: 50px;
 }

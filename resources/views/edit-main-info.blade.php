@@ -1,9 +1,30 @@
 <form>
+    <input type="hidden" id="slug" value="{{ $info['slug'] }}">
+    
     <div class="form-group">
-        <label for="exampleFormControlInput1">Ваш Email (нужен для редактирования и просмотра статистики теста)</label>
-        <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com" value="{{ $info['email'] }}">
+        <label>Ссылка для прохождения данного теста:</label>
+        <!--<a href="{{ $info['testLink'] }}" target="_blank">{{ $info['testLink'] }}</a>-->
+        
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" readonly="true" aria-describedby="btn-copy-test-link" value="{{ $info['testLink'] }}">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="btn-copy-test-link">Скопировать</button>
+            </div>
+        </div>
     </div>
-
+    
+    <div class="form-group">
+        <label>Ссылка на редактирование и просмотра статистики (только для Вас!):</label>
+        <!--<a href="{{ $info['editLink'] }}" target="_blank">{{ $info['editLink'] }}</a>-->
+        
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" readonly="true" aria-describedby="btn-copy-edit-link" value="{{ $info['editLink'] }}">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="btn-copy-edit-link">Скопировать</button>
+            </div>
+        </div>
+    </div>
+    
     <div class="form-group">
         <label for="exampleFormControlTextarea1">Описание (будет видно участникам тестирования)</label>
         <textarea class="form-control" id="exampleFormControlTextarea1" rows="3">{{ $info['description'] }}</textarea>

@@ -4,29 +4,34 @@ namespace App\Http\Controllers;
 
 use App\Test;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class TestController extends Controller
 {
     public function startNewTest(Request $request)
     {
-        $editSlug = md5(date('YmdHis'));
+        $editSlug = md5(date('YmdHis').Str::uuid()->toString());
+        
+        //TODO: check existing
         
         return redirect('/edit/' . $editSlug);
     }
-    public function showEditTest(string $slug)
-    {
+    public function showEditTest(string $editSlug)
+    {        
+        $testSlug = md5(date('YmdHis').$editSlug.Str::uuid()->toString());
+        
         $info = [
-            'editLink' => url("/edit/{$slug}"),
-            'testLink' => url("/test/{$slug}"),
+            'slug' => $editSlug,
+            'editLink' => url("/edit/{$editSlug}"),
+            'testLink' => url("/test/{$testSlug}"),
             'description' => 'atata',
-            'email' => 'mepata@yandex.ru',
             'length' => 60,
             'isActive' => 1
         ];
         
         $questions = [
             [
-                'number' => 1,
+                'id' => 1,
                 'questionText' => 'Сколько будет 2+2 если вы ретроградный меркурий?',
                 'answers' => [
                     [
@@ -44,7 +49,7 @@ class TestController extends Controller
                     ]
                 ]
             ], [
-                'number' => 2,
+                'id' => 2,
                 'questionText' => 'Кто такой галустя и с чем его едят, если он полетит в америку и побреется а потом опять отрастит бороду?',
                 'answers' => [
                     [
@@ -61,6 +66,20 @@ class TestController extends Controller
                         'isTrue' => true
                     ]
                 ]
+            ], [
+                'id' => 3,
+                'questionText' => '',
+                'answers' => [
+                    [
+                        'id' => 7,
+                        'answerText' => '',
+                        'isTrue' => false
+                    ], [
+                        'id' => 8,
+                        'answerText' => '',
+                        'isTrue' => false
+                    ]
+                ]
             ]
         ];
         
@@ -69,6 +88,92 @@ class TestController extends Controller
             'questions' => $questions
         ]);
     }
+    
+    
+    public function getAnswerForm(Request $request)
+    {
+        $slug = $request->post('slug');
+        $questionId = (int) $request->post('questionId');
+        
+        sleep(2);
+        //TODO: create answer in db and get it
+        
+        $answer = [
+            'id' => 11,
+            'answerText' => '',
+            'isTrue' => false
+        ];
+                
+        return response()->json([
+            'success' => true,
+            'slug' => $slug,
+            'html' => view('edit-answer', ['answer' => $answer, 'questionId' => $questionId])->render()
+        ]);
+    }
+    
+    public function getQuestionForm(Request $request)
+    {
+        $slug = $request->post('slug');
+        
+        sleep(2);
+        //TODO: create question in db and get it
+        $question = [
+            'id' => 4,
+            'questionText' => '',
+            'answers' => [
+                [
+                    'id' => 9,
+                    'answerText' => '',
+                    'isTrue' => false
+                ], [
+                    'id' => 10,
+                    'answerText' => '',
+                    'isTrue' => false
+                ]
+            ]
+        ];
+                
+        return response()->json([
+            'success' => true,
+            'slug' => $slug,
+            'html' => view('edit-question', ['question' => $question])->render()
+        ]);
+    }
+
+    public function deleteQuestion(Request $request)
+    {
+        $slug = $request->post('slug');
+        $questionId = (int) $request->post('questionId');
+        sleep(2);
+        //TODO: remove in db 
+        return response()->json([
+            'success' => true
+        ]);
+    }
+    
+    public function deleteAnswer(Request $request)
+    {
+        $slug = $request->post('slug');
+        $questionId = (int) $request->post('questionId');
+        $answerId = (int) $request->post('answerId');
+        sleep(2);
+        //TODO: remove in db 
+        return response()->json([
+            'success' => true
+        ]);
+    } 
+    
+    public function saveQuestion(Request $request)
+    {
+        $slug = $request->post('slug');
+        $questionId = (int) $request->post('questionId');
+        $answerId = (int) $request->post('answerId');
+        sleep(2);
+        //TODO: remove in db 
+        return response()->json([
+            'success' => true
+        ]);
+    }    
     
     
 }

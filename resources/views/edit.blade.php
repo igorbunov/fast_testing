@@ -6,14 +6,17 @@
     @include('edit-main-info', ['info' => $info])
     
     <div class="questions-container">
-        <p style="margin-top: 20px; text-align: center;">Список вопросов</p>
+        <h3 style="text-align: center;">Список вопросов</h3>
         
         @foreach ($questions as $question)
             @include('edit-question', ['question' => $question])
         @endforeach
-                
-        <button type="button" class="btn btn-primary add-question-btn">Добавить вопрос</button>
     </div>
+      
+    <button 
+        type="button" 
+        onclick="QuestionEdit.addNew(this)"
+        class="btn btn-primary btn-lg add-question-btn">Добавить вопрос</button>
 </div>
 
 @stop
