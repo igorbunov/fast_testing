@@ -16,14 +16,76 @@ class TestController extends Controller
         
         return redirect('/edit/' . $editSlug);
     }
+    public function showTest(string $testSlug)
+    {        
+        $info = [
+            'slug' => $testSlug,
+            'testLink' => url("/{$testSlug}"),
+            'description' => 'Привет, это тест про то и вот это, пройди и будешь молодцом!',
+            'length' => 60
+        ];
+        
+        $questions = [
+            [
+                'id' => 1,
+                'questionText' => 'Сколько будет 2+2 если вы ретроградный меркурий?',
+                'answers' => [
+                    [
+                        'id' => 1,
+                        'answerText' => 'ответ 1'
+                    ], [
+                        'id' => 2,
+                        'answerText' => 'ответ 2'
+                    ], [
+                        'id' => 3,
+                        'answerText' => 'ответ 3'
+                    ]
+                ]
+            ], [
+                'id' => 2,
+                'questionText' => 'Кто такой галустя и с чем его едят, если он полетит в америку и побреется а потом опять отрастит бороду?',
+                'answers' => [
+                    [
+                        'id' => 4,
+                        'answerText' => 'ответ 4'
+                    ], [
+                        'id' => 5,
+                        'answerText' => 'ответ 5'
+                    ], [
+                        'id' => 6,
+                        'answerText' => 'ответ 6'
+                    ]
+                ]
+            ], [
+                'id' => 3,
+                'questionText' => '',
+                'answers' => [
+                    [
+                        'id' => 7,
+                        'answerText' => ''
+                    ], [
+                        'id' => 8,
+                        'answerText' => ''
+                    ]
+                ]
+            ]
+        ];
+        
+//        dd($info, $questions);
+        return view('test', [ 
+            'info' => $info,
+            'questions' => $questions
+        ]);
+    }
+    
     public function showEditTest(string $editSlug)
     {        
-        $testSlug = md5(date('YmdHis').$editSlug.Str::uuid()->toString());
+        $testSlug = substr(md5(date('YmdHis').$editSlug.Str::uuid()->toString()), 0, 10);
         
         $info = [
             'slug' => $editSlug,
             'editLink' => url("/edit/{$editSlug}"),
-            'testLink' => url("/test/{$testSlug}"),
+            'testLink' => url("/{$testSlug}"),
             'description' => 'atata',
             'length' => 60,
             'isActive' => 1
@@ -88,8 +150,7 @@ class TestController extends Controller
             'questions' => $questions
         ]);
     }
-    
-    
+        
     public function getAnswerForm(Request $request)
     {
         $slug = $request->post('slug');

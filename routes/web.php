@@ -7,6 +7,7 @@ Route::get('/', function () {
 });
 
 Route::get('/edit/{editSlug}', 'TestController@showEditTest');
+Route::get('/{testSlug}', 'TestController@showTest');
 Route::post('/create_new_test', 'TestController@startNewTest');
 Route::post('/get_answer_form', 'TestController@getAnswerForm');
 
