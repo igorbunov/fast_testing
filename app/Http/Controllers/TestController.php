@@ -18,13 +18,6 @@ class TestController extends Controller
     }
     public function showTest(string $testSlug)
     {        
-        $info = [
-            'slug' => $testSlug,
-            'testLink' => url("/{$testSlug}"),
-            'description' => 'Привет, это тест про то и вот это, пройди и будешь молодцом!',
-            'length' => 60
-        ];
-        
         $questions = [
             [
                 'id' => 1,
@@ -70,6 +63,15 @@ class TestController extends Controller
                 ]
             ]
         ];
+        
+        $info = [
+            'slug' => $testSlug,
+            'testLink' => url("/{$testSlug}"),
+            'description' => 'Привет, это тест про то и вот это, пройди и будешь молодцом!',
+            'length' => 1,
+            'questions_count' => count($questions)
+        ];
+        
         
 //        dd($info, $questions);
         return view('test', [ 

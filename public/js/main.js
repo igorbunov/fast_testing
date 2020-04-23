@@ -87,6 +87,10 @@ function simpleAjax(params) {
 $( document ).ready(function() {
     console.log( "ready!" );
 //     $('[data-toggle="tooltip"]').tooltip();
+//localStorage.clear();
+    if (Test.isStarted()) {
+        Test.continue();
+    }
 });
 
 QuestionEdit = (function() {
@@ -209,6 +213,84 @@ AnswerEdit = (function() {
                     }
                 }
             });
+        }
+    };
+})();
+
+
+
+Test = (function() {
+    var me = this;
+
+    me.renderTimer = function(seconds) {
+        var date = new Date(0);
+        var timeString = '';
+
+        date.setSeconds(seconds);
+
+        if (seconds >= 60 * 60) {
+            timeString = date.toISOString().substr(11, 8);
+        } else {
+            timeString = date.toISOString().substr(14, 5);
+        }
+
+        $("#test-timer").text(timeString);
+    };
+
+    me.startTest = function(testLengthInSeconds) {
+        localStorage.setItem('timer', testLengthInSeconds);
+
+        var timer = setInterval(function() {
+            if (testLengthInSeconds <= 0) {
+                clearInterval(timer);
+
+                debugger;
+//TODO: отправить результат на сервер автоматом и убрать спрятать вопросы
+
+                return;
+            }
+
+            testLengthInSeconds--;
+
+            localStorage.setItem('timer', testLengthInSeconds);
+
+            me.renderTimer(testLengthInSeconds);
+        }, 1000);
+    };
+
+    return {
+        isStarted: function() {
+            return (localStorage.getItem('timer') != null);
+        }, 
+        isFinished: function() {
+            if (this.isStarted()) {
+                if (parseInt(localStorage.getItem('timer') <= 0)) {
+                    debugger;
+                }
+            }
+
+            return false;
+        },
+        continue: function() {
+            if (localStorage.getItem('timer') == null) {
+                return;
+            }
+
+            me.startTest(localStorage.getItem('timer'));
+
+            $("#test-preview-container").hide();
+            $("#test-process-container").show();
+        },
+        start: function(testLength) {
+            var name = $('#tested-name').val();
+
+            localStorage.clear();
+            localStorage.setItem('name', name);
+
+            me.startTest(testLength * 60);
+
+            $("#test-preview-container").hide();
+            $("#test-process-container").show();
         }
     };
 })();
