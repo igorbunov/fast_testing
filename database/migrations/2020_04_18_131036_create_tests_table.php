@@ -19,7 +19,7 @@ class CreateTestsTable extends Migration
             $table->id();
             $table->string('test_slug', 150)->unique();
             $table->string('edit_slug', 150)->unique();
-            $table->integer('test_time_minutes')->default(30 * 60);
+            $table->integer('test_time_minutes')->default(30);
             $table->integer('is_active')->default(0);
             $table->text('description');
             $table->timestamps();

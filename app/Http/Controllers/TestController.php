@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Answer;
+use App\Question;
 use App\Test;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class TestController extends Controller
 {
-    public function startNewTest(Request $request)
+    public function startNewTest()
     {
-        $editSlug = md5(date('YmdHis').Str::uuid()->toString());
-        
-        //TODO: check existing
-        
-        return redirect('/edit/' . $editSlug);
+        $test = Test::newTest();
+
+        return redirect('/e/' . $test->edit_slug);
+
     }
     public function showTest(string $testSlug)
     {        
@@ -81,74 +81,44 @@ class TestController extends Controller
     }
     
     public function showEditTest(string $editSlug)
-    {        
-        $testSlug = substr(md5(date('YmdHis').$editSlug.Str::uuid()->toString()), 0, 10);
-        
+    {
+        $test = Test::getByEditSlug($editSlug);
+
         $info = [
-            'slug' => $editSlug,
-            'editLink' => url("/edit/{$editSlug}"),
-            'testLink' => url("/{$testSlug}"),
-            'description' => 'atata',
-            'length' => 60,
-            'isActive' => 1
+            'slug' => $test->edit_slug,
+            'editLink' => url("/e/{$test->edit_slug}"),
+            'testLink' => url("/t/{$test->test_slug}"),
+            'description' => $test->description,
+            'length' => $test->test_time_minutes,
+            'isActive' => $test->is_active
         ];
-        
-        $questions = [
-            [
-                'id' => 1,
-                'questionText' => 'Сколько будет 2+2 если вы ретроградный меркурий?',
-                'answers' => [
-                    [
-                        'id' => 1,
-                        'answerText' => 'ответ 1',
-                        'isTrue' => false
-                    ], [
-                        'id' => 2,
-                        'answerText' => 'ответ 2',
-                        'isTrue' => true
-                    ], [
-                        'id' => 3,
-                        'answerText' => 'ответ 3',
-                        'isTrue' => false
-                    ]
-                ]
-            ], [
-                'id' => 2,
-                'questionText' => 'Кто такой галустя и с чем его едят, если он полетит в америку и побреется а потом опять отрастит бороду?',
-                'answers' => [
-                    [
-                        'id' => 4,
-                        'answerText' => 'ответ 4',
-                        'isTrue' => true
-                    ], [
-                        'id' => 5,
-                        'answerText' => 'ответ 5',
-                        'isTrue' => false
-                    ], [
-                        'id' => 6,
-                        'answerText' => 'ответ 6',
-                        'isTrue' => true
-                    ]
-                ]
-            ], [
-                'id' => 3,
-                'questionText' => '',
-                'answers' => [
-                    [
-                        'id' => 7,
-                        'answerText' => '',
-                        'isTrue' => false
-                    ], [
-                        'id' => 8,
-                        'answerText' => '',
-                        'isTrue' => false
-                    ]
-                ]
-            ]
-        ];
-        
+
+        $questionsTmp = Question::getQuestionsByTestId($test->id);
+        $questions = [];
+
+        foreach ($questionsTmp as $question) {
+            $questionRow = [
+                'id' => $question['id'],
+                'questionText' => $question['question'],
+                'answers' => []
+            ];
+
+            $answers = Answer::getAnswersByQuestionId($question['id']);
+
+            foreach ($answers as $answer) {
+                $questionRow['answers'][] = [
+                    'id' => $answer['id'],
+                    'answerText' => $answer['answer'],
+                    'isTrue' => $answer['is_true']
+                ];
+            }
+
+            $questions[] = $questionRow;
+        }
+//dd($questions);
+
         return view('edit', [
-            'info' => $info,            
+            'info' => $info,
             'questions' => $questions
         ]);
     }
@@ -174,31 +144,32 @@ class TestController extends Controller
         ]);
     }
     
-    public function getQuestionForm(Request $request)
+    public function getNewQuestionForm(Request $request)
     {
-        $slug = $request->post('slug');
-        
-        sleep(2);
-        //TODO: create question in db and get it
-        $question = [
-            'id' => 4,
-            'questionText' => '',
-            'answers' => [
-                [
-                    'id' => 9,
-                    'answerText' => '',
-                    'isTrue' => false
-                ], [
-                    'id' => 10,
-                    'answerText' => '',
-                    'isTrue' => false
-                ]
+        $editSlug = $request->post('slug');
+
+        $test = Test::getByEditSlug($editSlug);
+
+        $question = Question::newQuestion($test->id);
+
+        $emptyAnswer1 = Answer::newAnswer($question->id);
+        $emptyAnswer2 = Answer::newAnswer($question->id);
+
+        $question['answers'] = [
+            [
+                'id' => $emptyAnswer1->id,
+                'answerText' => $emptyAnswer1->answer,
+                'isTrue' => $emptyAnswer1->is_true
+            ], [
+                'id' => $emptyAnswer2->id,
+                'answerText' => $emptyAnswer2->answer,
+                'isTrue' => $emptyAnswer2->is_true
             ]
         ];
-                
+
         return response()->json([
             'success' => true,
-            'slug' => $slug,
+            'slug' => $editSlug,
             'html' => view('edit-question', ['question' => $question])->render()
         ]);
     }
