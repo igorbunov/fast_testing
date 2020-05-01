@@ -1,8 +1,8 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    RewriteCond %{HTTP_HOST} ^onlinetest [NC,OR]
-    RewriteCond %{HTTP_HOST} ^www.onlinetest
+    RewriteCond %{HTTP_HOST} ^fasttesting [NC,OR]
+    RewriteCond %{HTTP_HOST} ^www.fasttesting
     RewriteCond %{REQUEST_URI} !public/
     RewriteRule (.*) /public/$1 [L]
 
