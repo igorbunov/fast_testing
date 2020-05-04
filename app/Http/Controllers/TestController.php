@@ -13,7 +13,7 @@ class TestController extends Controller
     {
         $test = Test::newTest();
 
-        return redirect('/e/' . $test->edit_slug);
+        return redirect('/e/' . $test['edit_slug']);
 
     }
     public function showTest(string $testSlug)
@@ -85,15 +85,15 @@ class TestController extends Controller
         $test = Test::getByEditSlug($editSlug);
 
         $info = [
-            'slug' => $test->edit_slug,
-            'editLink' => url("/e/{$test->edit_slug}"),
-            'testLink' => url("/t/{$test->test_slug}"),
-            'description' => $test->description,
-            'length' => $test->test_time_minutes,
-            'isActive' => $test->is_active
+            'slug' => $test['edit_slug'],
+            'editLink' => url("/e/{$test['edit_slug']}"),
+            'testLink' => url("/t/{$test['test_slug']}"),
+            'description' => $test['description'],
+            'length' => $test['test_time_minutes'],
+            'isActive' => $test['is_active']
         ];
 
-        $questionsTmp = Question::getQuestionsByTestId($test->id);
+        $questionsTmp = Question::getQuestionsByTestId($test['id']);
         $questions = [];
 
         foreach ($questionsTmp as $question) {
@@ -115,7 +115,6 @@ class TestController extends Controller
 
             $questions[] = $questionRow;
         }
-//dd($questions);
 
         return view('edit', [
             'info' => $info,
@@ -150,20 +149,20 @@ class TestController extends Controller
 
         $test = Test::getByEditSlug($editSlug);
 
-        $question = Question::newQuestion($test->id);
+        $question = Question::newQuestion($test['id']);
 
-        $emptyAnswer1 = Answer::newAnswer($question->id);
-        $emptyAnswer2 = Answer::newAnswer($question->id);
+        $emptyAnswer1 = Answer::newAnswer($question['id']);
+        $emptyAnswer2 = Answer::newAnswer($question['id']);
 
         $question['answers'] = [
             [
-                'id' => $emptyAnswer1->id,
-                'answerText' => $emptyAnswer1->answer,
-                'isTrue' => $emptyAnswer1->is_true
+                'id' => $emptyAnswer1['id'],
+                'answerText' => $emptyAnswer1['answer'],
+                'isTrue' => $emptyAnswer1['is_true']
             ], [
-                'id' => $emptyAnswer2->id,
-                'answerText' => $emptyAnswer2->answer,
-                'isTrue' => $emptyAnswer2->is_true
+                'id' => $emptyAnswer2['id'],
+                'answerText' => $emptyAnswer2['answer'],
+                'isTrue' => $emptyAnswer2['is_true']
             ]
         ];
 
@@ -199,13 +198,44 @@ class TestController extends Controller
     
     public function saveQuestion(Request $request)
     {
-        $slug = $request->post('slug');
-        $questionId = (int) $request->post('questionId');
-        $answerId = (int) $request->post('answerId');
-        sleep(2);
-        //TODO: remove in db 
+        $editSlug = $request->post('slug');
+        $params = $request->post('params');
+
+        $test = Test::getByEditSlug($editSlug);
+        $questions = Question::getQuestionsByTestId($test['id']);
+
+        $isValidSlug = false;
+        $index = -1;
+
+        foreach ($questions as $i => $question) {
+            if ($question['id'] == $params['questionId']) {
+                $isValidSlug = true;
+                $index = $i;
+                break;
+            }
+        }
+
+        if ($isValidSlug) {
+            $curQuestion = $questions[$index];
+
+            Question::edit($curQuestion['id'], $params['questionText']);
+
+            foreach ($params['answers'] as $answer) {
+                if ($curQuestion['id'] == Answer::getQuestionId($answer['answerId'])) {
+                    $answer['isTrue'] = filter_var($answer['isTrue'], FILTER_VALIDATE_BOOLEAN);
+
+                    Answer::edit($answer['answerId'], $answer['answerText'], $answer['isTrue']);
+                }
+            }
+
+            return response()->json([
+                'success' => true
+            ]);
+        }
+
         return response()->json([
-            'success' => true
+            'success' => false,
+            'message' => 'Это не ваш тест!'
         ]);
     }    
     

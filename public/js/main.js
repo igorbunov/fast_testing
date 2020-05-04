@@ -1,11 +1,3 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
-
 function confirmDialog(question, callback) {
     var me = this;
     
@@ -122,16 +114,44 @@ QuestionEdit = (function() {
             });
         },
         save: function(btn, questionId) {
-            var me = this,
-                container = $("#question-edit-container-" + questionId);
-                
-            container.addClass('disabled-container');
+            var answers = $("#answers-container-" + questionId);
+
+            if (answers.length > 0) {
+                answers = answers[0];
+
+                var me = this,
+                    params = {
+                        questionId: questionId,
+                        questionText: $('#edit-question-' + questionId).val(),
+                        answers: []
+                    },
+                    container = $("#question-edit-container-" + questionId);
+// debugger;
+                container.addClass('disabled-container');
+
+                $(answers).children().each(function (index, answer) {
+                    var answerId = $(answer).attr('id'),
+                        ids = answerId.split('answer-edit-container-')[1],
+                        idsSplitted = ids.split('-'),
+                        answerItem = {
+                            isTrue: false,
+                            answerId: idsSplitted[1],
+                            answerText: $(answer).find('input[type="text"]').val()
+                        };
+
+                    if ($(answer).find('input[type="checkbox"]')[0].checked) {
+                        answerItem.isTrue = true;
+                    }
+
+                    params.answers.push(answerItem);
+                });
+            }
 
             simpleAjax({
                 url: '/save_question',
                 data: {
                     slug: getSlug(),
-                    questionId: questionId
+                    params: params
                 },
                 success: function(data) {
                     container.removeClass('disabled-container');

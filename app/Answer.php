@@ -34,6 +34,32 @@ class Answer extends Model
         return [];
     }
 
+    public static function getQuestionId(int $id): int
+    {
+        $record = self::find($id);
+
+        if (is_null($record)) {
+            throw new \Exception('Не найден ответ');
+        }
+
+        return $record->question_id;
+    }
+
+    public static function edit(int $id, string $answerText, bool $isTrue): Answer
+    {
+        $record = self::find($id);
+
+        if (is_null($record)) {
+            throw new \Exception('Не найден ответ');
+        }
+
+        $record->answer = $answerText;
+        $record->is_true = ($isTrue) ? 1 : 0;
+        $record->save();
+
+        return $record;
+    }
+
     private static function add(array $data): Answer
     {
         $record = new Answer();

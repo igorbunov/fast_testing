@@ -32,6 +32,20 @@ class Question extends Model
         return [];
     }
 
+    public static function edit(int $id, string $questionText): Question
+    {
+        $record = self::find($id);
+
+        if (is_null($record)) {
+            throw new \Exception('Не найден тест');
+        }
+
+        $record->question = $questionText;
+        $record->save();
+
+        return $record;
+    }
+
     private static function add(array $data): Question
     {
         $record = new Question();
