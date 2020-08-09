@@ -50,6 +50,39 @@ class Test extends Model
         return (count($res) == 0);
     }
 
+    public static function edit(int $id, array $data): Test
+    {
+        $record = self::find($id);
+
+        if (is_null($record)) {
+            throw new \Exception('Не найден тест');
+        }
+
+        foreach ($data as $field => $value) {
+            if (self::IS_ACTIVE == $field) {
+                $value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+            }
+
+            $record->$field = $value;
+        }
+
+        if (!array_key_exists(self::DESCRIPTION, $data)) {
+            $record->description = '';
+        }
+
+        if (!array_key_exists(self::TEST_TIME_MINUTES, $data)) {
+            $record->test_time_minutes = 30;
+        }
+
+        if (!array_key_exists(self::IS_ACTIVE, $data)) {
+            $record->is_active = 0;
+        }
+
+        $record->save();
+
+        return $record;
+    }
+
     private static function add(array $data): Test
     {
         $record = new Test();

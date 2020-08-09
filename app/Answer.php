@@ -39,6 +39,7 @@ class Answer extends Model
         $record = self::find($id);
 
         if (is_null($record)) {
+//            dd($id, $record);
             throw new \Exception('Не найден ответ');
         }
 

@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
-    <link href="{{ asset('css/main.css') }}@php echo '?' . rand(100,1000).md5(date('YmdHis')); @endphp" rel="stylesheet" media="screen">
+    <link href="{{ asset('public/css/main.css') }}@php echo '?' . rand(100,1000).md5(date('YmdHis')); @endphp" rel="stylesheet" media="screen">
 
 </head>
     <body>
@@ -28,7 +28,7 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
-        <script type="text/javascript" src="{{ asset('js/main.js') }}@php echo '?' . rand(100,1000).md5(date('YmdHis')); @endphp"></script>
+        <script type="text/javascript" src="{{ asset('public/js/main.js') }}@php echo '?' . rand(100,1000).md5(date('YmdHis')); @endphp"></script>
     
     
     

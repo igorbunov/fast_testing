@@ -80,8 +80,10 @@ $( document ).ready(function() {
     console.log( "ready!" );
 //     $('[data-toggle="tooltip"]').tooltip();
 //localStorage.clear();
-    if (Test.isStarted()) {
-        Test.continue();
+    if (window.location.pathname.indexOf('/t/') != -1) {
+        if (Test.isStarted()) {
+            Test.continue();
+        }
     }
 });
 
@@ -237,7 +239,31 @@ AnswerEdit = (function() {
     };
 })();
 
+TestEdit = (function () {
+    return {
+        save: function (e) {
+            var form = $('.edit-test-form');
 
+            simpleAjax({
+                url: '/save_test',
+                data: {
+                    slug: getSlug(),
+                    form: JSON.stringify(form.serializeArray())
+                },
+                success: function(data) {
+                    debugger;
+                    // container.removeClass('disabled-container');
+                    //
+                    // if (data.success) {
+                    //     container.remove();
+                    // } else {
+                    //     errorDialog(data.message);
+                    // }
+                }
+            });
+        }
+    }
+})();
 
 Test = (function() {
     var me = this;

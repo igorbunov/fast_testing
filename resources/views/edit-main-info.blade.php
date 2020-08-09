@@ -1,4 +1,4 @@
-<form>
+<form class="edit-test-form">
     <input type="hidden" id="slug" value="{{ $info['slug'] }}">
     
     <div class="form-group">
@@ -27,15 +27,27 @@
     
     <div class="form-group">
         <label for="exampleFormControlTextarea1">Описание (будет видно участникам тестирования)</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3">{{ $info['description'] }}</textarea>
+        <textarea
+                class="form-control"
+                id="exampleFormControlTextarea1"
+                rows="3"
+                name="description"
+        >{{ $info['description'] }}</textarea>
     </div>
 
     <div class="form-group">
         <label for="formControlRange">Длительность теста: <span id="test-length-value">{{ $info['length'] }}</span> (минут)</label>
 
-        <input type="range" list="tickmarks" class="form-control-range"
-             id="test-length" min="10" max="180" step="10" value="{{ $info['length'] }}"
-             oninput="setTestLength(this.value);">
+        <input type="range"
+               list="tickmarks"
+               class="form-control-range"
+               id="test-length"
+               min="10"
+               max="180"
+               step="10"
+               name="test_time_minutes"
+               value="{{ $info['length'] }}"
+               oninput="setTestLength(this.value);">
 
         <datalist id="tickmarks">
             @for ($i = 10; $i <= 180; $i+=10)
@@ -49,6 +61,18 @@
         data-onstyle="success" 
         data-offstyle="outline-danger"
         data-toggle="toggle" 
-        data-on="Активен" 
+        data-on="Активен"
+        name="is_active"
         data-off="Не активен" @if ($info['isActive']) checked @endif >
+
+    <div style="margin-top: 34px;">
+        <button type="button"
+                class="btn btn-success btn-lg"
+                data-toggle="tooltip"
+                data-placement="top"
+                onclick="TestEdit.save(this)"
+                title="Сохранить данные">Сохранить</button>
+    </div>
+
+
 </form>

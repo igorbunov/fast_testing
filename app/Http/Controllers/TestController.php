@@ -14,8 +14,40 @@ class TestController extends Controller
         $test = Test::newTest();
 
         return redirect('/e/' . $test['edit_slug']);
-
     }
+
+    public function editTest(Request $request)
+    {
+        $slug = $request->post('slug');
+        $form = \json_decode($request->post('form'), true);
+        $data = [
+//            'slug' => $slug
+        ];
+
+        $test = Test::getByEditSlug($slug);
+
+        if (is_null($test)) {
+            return response()->json([
+                'success' => false,
+                'slug' => $slug,
+                'message' => 'Ошибка получения тэста'
+            ]);
+        }
+
+        foreach ($form as $row) {
+            $data[$row['name']] = $row['value'];
+        }
+
+//        dd($data, $test->id);
+
+        $test->edit($test->id, $data);
+
+        return response()->json([
+            'success' => true,
+            'slug' => $slug
+        ]);
+    }
+
     public function showTest(string $testSlug)
     {        
         $questions = [
@@ -126,16 +158,9 @@ class TestController extends Controller
     {
         $slug = $request->post('slug');
         $questionId = (int) $request->post('questionId');
-        
-        sleep(2);
-        //TODO: create answer in db and get it
-        
-        $answer = [
-            'id' => 11,
-            'answerText' => '',
-            'isTrue' => false
-        ];
-                
+
+        $answer = Answer::newAnswer($questionId);
+
         return response()->json([
             'success' => true,
             'slug' => $slug,
@@ -227,6 +252,8 @@ class TestController extends Controller
                     Answer::edit($answer['answerId'], $answer['answerText'], $answer['isTrue']);
                 }
             }
+
+//            dd($curQuestion['id'], $answer['answerId']);
 
             return response()->json([
                 'success' => true
