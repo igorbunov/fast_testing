@@ -28,17 +28,17 @@
     </div>
     
     <div class="question-main-buttons-container">
-        <button type="button" 
-                class="btn btn-success"
-                data-toggle="tooltip" 
-                data-placement="top"                 
-                onclick="QuestionEdit.save(this, {{ $question['id'] }})"
-                title="Сохранить данные">Сохранить</button>
+        {{--<button type="button" --}}
+                {{--class="btn btn-success"--}}
+                {{--data-toggle="tooltip" --}}
+                {{--data-placement="top"                 --}}
+                {{--onclick="QuestionEdit.save(this, {{ $question['id'] }})"--}}
+                {{--title="Сохранить данные">Сохранить</button>--}}
         <button type="button"
                 class="btn btn-danger"
                 data-toggle="tooltip"
                 data-placement="top"
                 onclick="QuestionEdit.delete(this, {{ $question['id'] }})"
-                title="Удалить вопрос">Удалить</button>        
+                title="Удалить вопрос">Удалить вопрос</button>
     </div>
 </div>

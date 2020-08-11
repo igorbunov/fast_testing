@@ -39,7 +39,7 @@ body{
 }
 .question-main-buttons-container{
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
 }
 
 .disabled-container {

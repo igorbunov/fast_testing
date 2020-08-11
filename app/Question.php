@@ -11,6 +11,34 @@ class Question extends Model
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
 
+    public static function isLinkedToSlug(int $questionId, string $slug): bool
+    {
+        $record = self::find($questionId);
+
+        if (is_null($record)) {
+            return false;
+        }
+
+        $test = Test::getByEditSlug($slug);
+
+        if (is_null($test)) {
+            return false;
+        }
+
+        return $test->id == $record->test_id;
+    }
+
+    public static function deleteById(int $questionId)
+    {
+        $record = self::find($questionId);
+
+        if (is_null($record)) {
+            throw new \Exception('Не найден тест');
+        }
+
+        $record->destroy($questionId);
+    }
+
     public static function newQuestion(int $testId, string $question = ''): Question
     {
         return self::add([

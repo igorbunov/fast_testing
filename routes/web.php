@@ -18,4 +18,3 @@ Route::post('/get_question_form', 'TestController@getNewQuestionForm');
 
 Route::post('/delete_question', 'TestController@deleteQuestion');
 Route::post('/delete_answer', 'TestController@deleteAnswer');
-Route::post('/save_question', 'TestController@saveQuestion');

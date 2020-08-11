@@ -12,6 +12,42 @@ class Answer extends Model
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
 
+    public static function isLinkedToQuestion(int $answerId, int $questionId): bool
+    {
+        $res = self::where([
+            'id' => $answerId,
+            self::QUESTION_ID => $questionId
+        ])->get();
+
+        return !is_null($res);
+    }
+
+    public static function deleteById(int $answerId)
+    {
+        $record = self::find($answerId);
+
+        if (is_null($record)) {
+            throw new \Exception('Не найден ответ');
+        }
+
+        $record->delete();
+    }
+
+    public static function deleteByQuestionId(int $questionId)
+    {
+        $res = self::where([
+            self::QUESTION_ID => $questionId
+        ])->get();
+
+        if (is_null($res)) {
+            return;
+        }
+
+        foreach ($res as $row) {
+            $row->destroy($row->id);
+        }
+    }
+
     public static function newAnswer(int $questionId, string $answer = '', bool $isTrue = false): Answer
     {
         return self::add([

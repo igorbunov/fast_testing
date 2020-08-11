@@ -20,10 +20,8 @@ class TestController extends Controller
     {
         $slug = $request->post('slug');
         $form = \json_decode($request->post('form'), true);
-        $data = [
-//            'slug' => $slug
-        ];
-
+        $questions = \json_decode($request->post('questions'), true);
+        $data = [];
         $test = Test::getByEditSlug($slug);
 
         if (is_null($test)) {
@@ -38,9 +36,31 @@ class TestController extends Controller
             $data[$row['name']] = $row['value'];
         }
 
-//        dd($data, $test->id);
-
         $test->edit($test->id, $data);
+
+        foreach ($questions as $question) {
+            if (!Question::isLinkedToSlug($question["questionId"], $slug)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Это не ваш вопрос'
+                ]);
+            }
+
+            Question::edit($question["questionId"], $question["questionText"]);
+
+            foreach ($question['answers'] as $answer) {
+                if (!Answer::isLinkedToQuestion($answer["answerId"], $question["questionId"])) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Это не ваш ответ'
+                    ]);
+                }
+
+                $isTrue = filter_var($answer['isTrue'], FILTER_VALIDATE_BOOLEAN);
+
+                Answer::edit($answer["answerId"], $answer["answerText"], $isTrue);
+            }
+        }
 
         return response()->json([
             'success' => true,
@@ -202,8 +222,24 @@ class TestController extends Controller
     {
         $slug = $request->post('slug');
         $questionId = (int) $request->post('questionId');
-        sleep(2);
-        //TODO: remove in db 
+
+        if (!Question::isLinkedToSlug($questionId, $slug)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'its not your question'
+            ]);
+        }
+
+        try {
+            Answer::deleteByQuestionId($questionId);
+            Question::deleteById($questionId);
+        } catch (\Exception $err) {
+            return response()->json([
+                'success' => false,
+                'message' => $err->getMessage()
+            ]);
+        }
+
         return response()->json([
             'success' => true
         ]);
@@ -214,57 +250,25 @@ class TestController extends Controller
         $slug = $request->post('slug');
         $questionId = (int) $request->post('questionId');
         $answerId = (int) $request->post('answerId');
-        sleep(2);
-        //TODO: remove in db 
-        return response()->json([
-            'success' => true
-        ]);
-    } 
-    
-    public function saveQuestion(Request $request)
-    {
-        $editSlug = $request->post('slug');
-        $params = $request->post('params');
 
-        $test = Test::getByEditSlug($editSlug);
-        $questions = Question::getQuestionsByTestId($test['id']);
-
-        $isValidSlug = false;
-        $index = -1;
-
-        foreach ($questions as $i => $question) {
-            if ($question['id'] == $params['questionId']) {
-                $isValidSlug = true;
-                $index = $i;
-                break;
-            }
-        }
-
-        if ($isValidSlug) {
-            $curQuestion = $questions[$index];
-
-            Question::edit($curQuestion['id'], $params['questionText']);
-
-            foreach ($params['answers'] as $answer) {
-                if ($curQuestion['id'] == Answer::getQuestionId($answer['answerId'])) {
-                    $answer['isTrue'] = filter_var($answer['isTrue'], FILTER_VALIDATE_BOOLEAN);
-
-                    Answer::edit($answer['answerId'], $answer['answerText'], $answer['isTrue']);
-                }
-            }
-
-//            dd($curQuestion['id'], $answer['answerId']);
-
+        if (!Question::isLinkedToSlug($questionId, $slug)) {
             return response()->json([
-                'success' => true
+                'success' => false,
+                'message' => 'its not your question'
             ]);
         }
 
+        if (!Answer::isLinkedToQuestion($answerId, $questionId)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'its not your answer'
+            ]);
+        }
+
+        Answer::deleteById($answerId);
+
         return response()->json([
-            'success' => false,
-            'message' => 'Это не ваш тест!'
+            'success' => true
         ]);
-    }    
-    
-    
+    }
 }
