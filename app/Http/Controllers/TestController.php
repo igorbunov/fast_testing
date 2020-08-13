@@ -69,65 +69,40 @@ class TestController extends Controller
     }
 
     public function showTest(string $testSlug)
-    {        
-        $questions = [
-            [
-                'id' => 1,
-                'questionText' => 'Сколько будет 2+2 если вы ретроградный меркурий?',
-                'answers' => [
-                    [
-                        'id' => 1,
-                        'answerText' => 'ответ 1'
-                    ], [
-                        'id' => 2,
-                        'answerText' => 'ответ 2'
-                    ], [
-                        'id' => 3,
-                        'answerText' => 'ответ 3'
-                    ]
-                ]
-            ], [
-                'id' => 2,
-                'questionText' => 'Кто такой галустя и с чем его едят, если он полетит в америку и побреется а потом опять отрастит бороду?',
-                'answers' => [
-                    [
-                        'id' => 4,
-                        'answerText' => 'ответ 4'
-                    ], [
-                        'id' => 5,
-                        'answerText' => 'ответ 5'
-                    ], [
-                        'id' => 6,
-                        'answerText' => 'ответ 6'
-                    ]
-                ]
-            ], [
-                'id' => 3,
-                'questionText' => '',
-                'answers' => [
-                    [
-                        'id' => 7,
-                        'answerText' => ''
-                    ], [
-                        'id' => 8,
-                        'answerText' => ''
-                    ]
-                ]
-            ]
-        ];
-        
-        $info = [
-            'slug' => $testSlug,
-            'testLink' => url("/{$testSlug}"),
-            'description' => 'Привет, это тест про то и вот это, пройди и будешь молодцом!',
-            'length' => 1,
-            'questions_count' => count($questions)
-        ];
-        
-        
-//        dd($info, $questions);
+    {
+        $test = Test::getByTestSlug($testSlug);
+
+        if (is_null($test)) {
+            return redirect('main');
+        }
+
+        if (!$test->is_active) {
+            return redirect('main');
+        }
+
+        $questions = Question::getQuestionsByTestId($test->id);
+
+        if (count($questions) == 0) {
+            return redirect('main');
+        }
+
+
+        foreach ($questions as &$question) {
+            $answers = Answer::getAnswersByQuestionId($question['id']);
+
+            $question['answers'] = $answers;
+        }
+
+        unset($question);
+//dd($questions);
         return view('test', [ 
-            'info' => $info,
+            'info' => [
+                'slug' => $testSlug,
+                'testLink' => url("/{$testSlug}"),
+                'description' => $test->description,
+                'length' => $test->test_time_minutes,
+                'questions_count' => count($questions)
+            ],
             'questions' => $questions
         ]);
     }

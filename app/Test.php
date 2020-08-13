@@ -34,6 +34,13 @@ class Test extends Model
         ]);
     }
 
+    public static function getByTestSlug(string $testSlug): Test
+    {
+        return self::where([
+            self::TEST_SLUG => $testSlug
+        ])->first();
+    }
+
     public static function getByEditSlug(string $editSlug): Test
     {
         return self::where([

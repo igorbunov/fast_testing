@@ -24,7 +24,7 @@
          data-placement="top"
          onclick="AnswerEdit.addNew(this, {{ $question['id'] }})"
          title="Добавить ответ">
-        <i class="fa fa-plus"></i>        
+        <i class="fa fa-plus"></i>
     </div>
     
     <div class="question-main-buttons-container">
