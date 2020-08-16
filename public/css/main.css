@@ -47,5 +47,28 @@ body{
     opacity: 0.4;
 }
 .questions-container{
-    margin-top: 50px;
+
+}
+
+.t-answer-item{
+    display: flex;
+    padding: 10px;
+    border: 1px solid blue;
+    margin-bottom: 5px;
+    align-items: center;
+    font-size: 22px;
+}
+.t-answer-item:hover{
+    background-color: aliceblue;
+    cursor: pointer;
+}
+
+.t-question-test-container{
+    margin-top: 20px;
+}
+
+@media (min-width: 992px) {
+    .container {
+        max-width: 660px;
+    }
 }

@@ -9,6 +9,9 @@ Route::get('/', function () {
 Route::get('/e/{editSlug}', 'TestController@showEditTest');
 Route::get('/t/{testSlug}', 'TestController@showTest');
 
+Route::post('/finish_test', 'TestController@finishTest');
+Route::post('/start_test', 'TestController@startTest');
+
 Route::post('/create_new_test', 'TestController@startNewTest');
 Route::get('/create_new_test', 'TestController@startNewTest');
 Route::post('/save_test', 'TestController@editTest');

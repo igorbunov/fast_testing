@@ -2,9 +2,12 @@ $( document ).ready(function() {
     console.log( "ready!" );
 
     if (window.location.pathname.indexOf('/t/') != -1) {
-        if (Test.isStarted()) {
-            Test.continue();
-        }
+        // if (Test.isStarted()) {
+        //     Test.continue();
+        // }
+
+        // Test.start();
+
     }
 });
 
@@ -267,6 +270,11 @@ TestEdit = (function () {
 Test = (function() {
     var me = this;
 
+    me.validateEmail = function($email) {
+        var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+        return emailReg.test( $email );
+    };
+
     me.renderTimer = function(seconds) {
         var date = new Date(0);
         var timeString = '';
@@ -326,16 +334,96 @@ Test = (function() {
             $("#test-preview-container").hide();
             $("#test-process-container").show();
         },
-        start: function(testLength) {
-            var name = $('#tested-name').val();
+        start: function(btn) {
+            var email = $('#tested-email').val(),
+                container = $('#test-preview-container');
 
-            localStorage.clear();
-            localStorage.setItem('name', name);
+            if (!validateEmail(email)) {
+                errorDialog('Ваш email пустой или не валидный');
+                return;
+            }
 
-            me.startTest(testLength * 60);
+            container.addClass('disabled-container');
 
-            $("#test-preview-container").hide();
-            $("#test-process-container").show();
+            // localStorage.clear();
+            // localStorage.setItem('name', name);
+
+            // me.startTest(testLength * 60);
+
+            // $("#test-preview-container").hide();
+            // $("#test-process-container").show();
+
+            simpleAjax({
+                url: '/start_test',
+                data: {
+                    slug: container.data('slug'),
+                    email: email
+                },
+                success: function(data) {
+                    container.removeClass('disabled-container');
+
+                    if (data.success) {
+                        $("#test-process-container").data('resultid', data.result_id);
+                        $("#test-process-container").show();
+
+                        $("#tested-email").attr('disabled', true);
+                        $(btn).attr('disabled', true);
+                    } else {
+                        errorDialog(data.message);
+                    }
+                }
+            });
+        },
+        finish: function (btn) {
+            var result = [],
+                container = $("#test-process-container"),
+                testedEmail = $("#tested-email").val(),
+                resultId = $("#test-process-container").data('resultid');
+
+            if (testedEmail == '' || !validateEmail(testedEmail)) {
+                errorDialog('Необходимо ввести ваш email');
+                return;
+            }
+
+            $(container).addClass('disabled-container');
+
+            $(".t-answer-item").each(function (i, answerRow) {
+                result.push({
+                    question_id: $(answerRow).data('questionid'),
+                    answer_id: $(answerRow).data('answerid'),
+                    checked: $(answerRow).data('checked')
+                });
+            });
+
+            simpleAjax({
+                url: '/finish_test',
+                data: {
+                    slug: container.data('slug'),
+                    email: testedEmail,
+                    result_id: resultId,
+                    data: JSON.stringify(result)
+                },
+                success: function(data) {
+                    $(container).removeClass('disabled-container');
+
+                    if (data.success) {
+                        $(btn).remove();
+                        autoHideAlert('Тест завершен');
+                        // $(container).remove();
+                    } else {
+                        errorDialog(data.message);
+                    }
+                }
+            });
+        },
+        answerClick: function (container, questionId, answerId) {
+            if (!$(container).data('checked')) {
+                $(container).data('checked', true);
+                $(container).children('i').css('color', 'blue');
+            } else {
+                $(container).data('checked', false);
+                $(container).children('i').css('color', 'gainsboro');
+            }
         }
     };
 })();

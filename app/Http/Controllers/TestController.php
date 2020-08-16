@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Answer;
 use App\Question;
+use App\Result;
+use App\ResultAnswer;
 use App\Test;
 use Illuminate\Http\Request;
 
@@ -104,6 +106,141 @@ class TestController extends Controller
                 'questions_count' => count($questions)
             ],
             'questions' => $questions
+        ]);
+    }
+
+    public function startTest(Request $request)
+    {
+        $testSlug = $request->post('slug');
+        $email = $request->post('email');
+
+        if (empty($email)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email не может быть пустым'
+            ]);
+        }
+
+        $test = Test::getByTestSlug($testSlug);
+
+        if (empty($test)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Нет найден тест'
+            ]);
+        }
+
+        $result = Result::add([
+            Result::TEST_ID => $test->id,
+            Result::EMAIL => $email,
+            Result::STATUS => Result::STATUS_STARTED
+        ]);
+
+        if (empty($result)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка начала тестирования'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'result_id' => $result->id
+            //'html' => view('edit-answer', ['answer' => $answer, 'questionId' => $questionId])->render()
+        ]);
+    }
+
+    public function finishTest(Request $request)
+    {
+        $testSlug = $request->post('slug');
+        $resultId = (int) $request->post('result_id');
+        $email = $request->post('email');
+        $data = \json_decode($request->post('data'), true);
+
+        if (empty($email)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email не может быть пустым'
+            ]);
+        }
+        if (empty($data)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Нет ответов'
+            ]);
+        }
+
+        $test = Test::getByTestSlug($testSlug);
+
+        if (empty($test)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Нет найден тест'
+            ]);
+        }
+
+        $test = $test->toArray();
+
+        foreach ($data as $row) {
+            $questionId = (int) $row['question_id'];
+            $answerId = (int) $row['answer_id'];
+
+            if (!Question::isLinkedToSlug($questionId, $test[Test::EDIT_SLUG])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Это не ваши вопросы'
+                ]);
+            }
+
+            if (!Answer::isLinkedToQuestion($answerId, $questionId)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Это не ваши ответы'
+                ]);
+            }
+        }
+
+        $result = Result::getById($resultId);
+
+        if (is_null($result)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Нет найден результат'
+            ]);
+        }
+
+        $result = $result->toArray();
+
+        if ($result[Result::TEST_ID] != $test['id']) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Результат не от этого теста'
+            ]);
+        }
+
+        Result::edit($result['id'], [
+            Result::STATUS => Result::STATUS_FINISHED,
+            Result::END_DT => Result::DT_NOW
+        ]);
+
+        foreach ($data as $row) {
+            $questionId = (int) $row['question_id'];
+            $answerId = (int) $row['answer_id'];
+            $isChecked = filter_var($row['checked'], FILTER_VALIDATE_BOOLEAN);
+
+            ResultAnswer::add([
+                ResultAnswer::RESULT_ID => $result['id'],
+                ResultAnswer::QUESTION_ID => $questionId,
+                ResultAnswer::ANSWER_ID => $answerId,
+                ResultAnswer::IS_CHECKED => $isChecked
+            ]);
+        }
+
+//        dd($testSlug, $email, $data);
+
+        return response()->json([
+            'success' => true
+            //'html' => view('edit-answer', ['answer' => $answer, 'questionId' => $questionId])->render()
         ]);
     }
     

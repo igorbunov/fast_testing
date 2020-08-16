@@ -2,60 +2,53 @@
 
 @section('content')
 
-<div id="test-preview-container" class="container">
-    <div class="card text-center" style="padding: 20px;">
-        <p class="card-text">{{ $info['description'] }}</p>
-            
-        <form>
-            <div class="form-group row">
-                <label for="tested-name" class="col-sm-2 col-form-label">Ваше имя *</label>
-                <div class="col-sm-10">
-                  <input type="text" 
-                         class="form-control" 
-                         id="tested-name" 
-                         placeholder="Введите ваше имя"
-                         maxlength="50"
-                         required
-                         >
-                </div>
-            </div>
-            <div class="form-group">
-                <p>Время на прохождение: {{ $info['length'] }} минут</p>
-            </div>
-            <div class="form-group">
-                <p>Всего вопросов:  {{ $info['questions_count'] }} </p>
-            </div>
-          </form>
-        <div>
-            <button type="button" 
-                    class="btn btn-lg btn-success"
-                    onclick="Test.start({{ $info['length'] }});"
-                    >Начать</button>
-        </div>
-    </div>
+<div id="test-preview-container" class="container" style="padding: 20px; border: 1px solid blue;" data-slug="{{ $info['slug'] }}">
+    @if(isset($info['description']))
+        <p class="card-text">Примечание: {{ $info['description'] }}</p>
+    @endif
+
+    <form>
+        <input type="email"
+            class="form-control"
+            style="margin: 16px 0;"
+            id="tested-email"
+            placeholder="Ваш email"
+            maxlength="50"
+            required>
+        <p>Время на прохождение: {{ $info['length'] }} минут</p>
+      </form>
+
+    <button type="button"
+        class="btn btn-lg btn-success"
+        onclick="Test.start(this);">Начать</button>
 </div>
 
-<div id="test-process-container" class="container" style="display: none;padding: 20px;">
-   <div class="card text-center" style="padding: 20px;">
-        <p class="card-text">{{ $info['description'] }}</p>
+<div id="test-process-container" class="container" style="display: none;padding: 20px;" data-resultid="0" data-slug="{{ $info['slug'] }}">
+    <div class="questions-container">
+        @foreach ($questions as $question)
+            <div class="t-question-test-container">
+                <p style="padding: 10px;font-size: 26px;text-align: left;    margin-bottom: 0px;">{{ $question['question'] }}</p>
+                <div class="t-answers-container">
+                    @foreach ($question['answers'] as $answer)
+                        <div
+                                class="t-answer-item"
+                                data-questionid="{{$question['id']}}"
+                                data-answerid="{{$answer['id']}}"
+                                data-checked="false"
+                                onclick="Test.answerClick(this, '{{$question['id']}}', '{{$answer['id']}}')"
+                        >
+                            <i class="fa fa-check" style="color: gainsboro; font-size: 32px; margin: 0 4px;"></i>
+                            <div style="margin-left: 5px;">{{ $answer['answer'] }}</div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endforeach
+    </div>
 
-        <div class="form-group">
-            <p>Оставшееся время: <span id="test-timer"></span></p>
-            </div>
-        
-        
-            <div class="questions-container">
-            <h3 style="text-align: center;">Список вопросов</h3>
-
-                @foreach ($questions as $question)
-                    @include('test-question', ['question' => $question])
-                @endforeach
-            </div>
-                        
-            <div>
-                <button type="button" class="btn btn-success">Закончить тест</button>
-            </div>
-        </div>
+    <div>
+        <button id="finish-test" type="button" class="btn btn-success" onclick="Test.finish(this);">Закончить тест</button>
+    </div>
 </div>
 
 @stop
