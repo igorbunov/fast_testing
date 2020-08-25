@@ -15,10 +15,10 @@
             placeholder="Ваш email"
             maxlength="50"
             required>
-        <p>Время на прохождение: {{ $info['length'] }} минут</p>
+        <p id="test-timer">Время на прохождение: {{ $info['length'] }} минут</p>
       </form>
 
-    <button type="button"
+    <button type="button" id="start-testing"
         class="btn btn-lg btn-success"
         onclick="Test.start(this);">Начать</button>
 </div>

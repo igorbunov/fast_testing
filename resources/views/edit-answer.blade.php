@@ -6,10 +6,12 @@
     </div>
     
     <input type="text" maxlength="200" class="form-control" value="{{ $answer['answerText'] }}" />
-    
+
+    @if(empty($info['isActive']))
     <i class="fa fa-trash delete-answer"
        data-toggle="tooltip"
        data-placement="top" 
        onclick="AnswerEdit.delete(this, {{ $questionId }}, {{ $answer['id']}} )"
        title="Удалить ответ"></i>
+    @endif
 </div>

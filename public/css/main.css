@@ -72,3 +72,10 @@ body{
         max-width: 660px;
     }
 }
+
+
+.results-preview-container{
+    display: flex;
+    align-items: baseline;
+    margin: 40px 0;
+}

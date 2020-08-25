@@ -8,9 +8,99 @@ use App\Result;
 use App\ResultAnswer;
 use App\Test;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TestController extends Controller
 {
+    public function showResults($editSlug)
+    {
+        $test = Test::getByEditSlug($editSlug);
+
+        $info = [
+            'slug' => $test['edit_slug'],
+            'editLink' => url("/e/{$test['edit_slug']}"),
+            'testLink' => url("/t/{$test['test_slug']}"),
+            'description' => $test['description'],
+            'length' => $test['test_time_minutes'],
+            'isActive' => $test['is_active']
+        ];
+
+        $results = Result::getByTestId($test['id']);
+
+        foreach ($results as $i => $result) {
+            $results[$i]->report = Result::getSuccessResult($result->id);
+        }
+
+//        dd($results);
+
+        return view('results', [
+            'info' => $info,
+            'results' => $results
+        ]);
+    }
+
+    public function showOneResult($editSlug, $resultId)
+    {
+        $test = Test::getByEditSlug($editSlug);
+
+        $info = [
+            'slug' => $test['edit_slug'],
+            'editLink' => url("/e/{$test['edit_slug']}"),
+            'testLink' => url("/t/{$test['test_slug']}"),
+            'description' => $test['description'],
+            'length' => $test['test_time_minutes'],
+            'isActive' => $test['is_active']
+        ];
+
+        $questionsTmp = Question::getQuestionsByTestId($test['id']);
+        $questions = [];
+
+        foreach ($questionsTmp as $question) {
+            $questionRow = [
+                'id' => $question['id'],
+                'questionText' => $question['question'],
+                'answers' => []
+            ];
+
+            $answers = Answer::getAnswersByQuestionId($question['id']);
+
+            foreach ($answers as $answer) {
+                $questionRow['answers'][] = [
+                    'id' => $answer['id'],
+                    'answerText' => $answer['answer'],
+                    'isTrue' => $answer['is_true']
+                ];
+            }
+
+            $questions[] = $questionRow;
+        }
+
+//        dd($info);
+
+        return view('result', [
+            'info' => $info,
+            'questions' => $questions
+        ]);
+    }
+
+    public function finishExpiredTests()
+    {
+        $tests = Test::getActiveTests();
+
+        foreach ($tests as $test) {
+            $results = Result::getDelayedTests($test['id'], $test['test_time_minutes']);
+
+            foreach ($results as $result) {
+                Result::edit($result->id, [
+                    Result::STATUS => Result::STATUS_FINISHED,
+                    Result::END_DT => Result::DT_NOW
+                ]);
+
+                Log::alert('Finished delayed test result, id = ' . $result->id);
+            }
+        }
+    }
+
     public function startNewTest()
     {
         $test = Test::newTest();
@@ -70,6 +160,31 @@ class TestController extends Controller
         ]);
     }
 
+    public function editTestStatus(Request $request)
+    {
+        $slug = $request->post('slug');
+        $isActive = (int) $request->post('is_active', 0);
+
+        $test = Test::getByEditSlug($slug);
+
+        if (is_null($test)) {
+            return response()->json([
+                'success' => false,
+                'slug' => $slug,
+                'message' => 'Ошибка получения теста'
+            ]);
+        }
+
+        Test::edit($test['id'], [
+            Test::IS_ACTIVE => $isActive
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'slug' => $slug
+        ]);
+    }
+
     public function showTest(string $testSlug)
     {
         $test = Test::getByTestSlug($testSlug);
@@ -78,10 +193,9 @@ class TestController extends Controller
             return redirect('main');
         }
 
-        if (!$test->is_active) {
-            return redirect('main');
+        if (empty($test->is_active)) {
+            return 'Тест не активен';
         }
-
         $questions = Question::getQuestionsByTestId($test->id);
 
         if (count($questions) == 0) {
@@ -145,8 +259,46 @@ class TestController extends Controller
 
         return response()->json([
             'success' => true,
-            'result_id' => $result->id
+            'result_id' => $result->id,
+            'time' => $test[Test::TEST_TIME_MINUTES] * 60
             //'html' => view('edit-answer', ['answer' => $answer, 'questionId' => $questionId])->render()
+        ]);
+    }
+
+    public function getTestInfo(Request $request)
+    {
+        $testSlug = $request->post('slug');
+        $resultId = (int) $request->post('result_id');
+
+        $test = Test::getByTestSlug($testSlug);
+        $result = Result::getById($resultId);
+
+        if (is_null($result)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Нет найден результат'
+            ]);
+        }
+
+        $result = $result->toArray();
+
+        if ($result[Result::TEST_ID] != $test['id']) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Результат не от этого теста'
+            ]);
+        }
+
+        if ($result[Result::STATUS] == Result::STATUS_FINISHED) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Время вышло'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'seconds_to_end' => Result::getSecondsToEnd($test['id'], $resultId)
         ]);
     }
 
@@ -279,6 +431,8 @@ class TestController extends Controller
 
             $questions[] = $questionRow;
         }
+
+//        dd($info);
 
         return view('edit', [
             'info' => $info,

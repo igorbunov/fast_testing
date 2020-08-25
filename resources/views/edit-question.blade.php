@@ -18,7 +18,8 @@
             @include('edit-answer', ['answer' => $answer, 'questionId' => $question['id'] ])                        
         @endforeach
     </div>
-    
+
+    @if(empty($info['isActive']))
     <div class="add-answer-btn btn-primary"
          data-toggle="tooltip"
          data-placement="top"
@@ -26,19 +27,16 @@
          title="Добавить ответ">
         <i class="fa fa-plus"></i>
     </div>
+    @endif
     
     <div class="question-main-buttons-container">
-        {{--<button type="button" --}}
-                {{--class="btn btn-success"--}}
-                {{--data-toggle="tooltip" --}}
-                {{--data-placement="top"                 --}}
-                {{--onclick="QuestionEdit.save(this, {{ $question['id'] }})"--}}
-                {{--title="Сохранить данные">Сохранить</button>--}}
+        @if(empty($info['isActive']))
         <button type="button"
                 class="btn btn-danger"
                 data-toggle="tooltip"
                 data-placement="top"
                 onclick="QuestionEdit.delete(this, {{ $question['id'] }})"
                 title="Удалить вопрос">Удалить вопрос</button>
+        @endif
     </div>
 </div>

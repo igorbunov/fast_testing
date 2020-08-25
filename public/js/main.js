@@ -2,12 +2,9 @@ $( document ).ready(function() {
     console.log( "ready!" );
 
     if (window.location.pathname.indexOf('/t/') != -1) {
-        // if (Test.isStarted()) {
-        //     Test.continue();
-        // }
-
-        // Test.start();
-
+        if (Test.isStarted()) {
+            Test.updateData(Test.continue);
+        }
     }
 });
 
@@ -48,11 +45,13 @@ function errorDialog(msg) {
     });
 }
 
-function autoHideAlert(msg){
+function autoHideAlert(msg, timer){
+    timer = timer || 300;
+
     $.alert({
         title: 'Системное сообщение',
         content: msg,
-        autoClose: 'ok|300',    
+        autoClose: 'ok|' + timer,
     });
     
 }
@@ -240,7 +239,67 @@ AnswerEdit = (function() {
 })();
 
 TestEdit = (function () {
+    var copyText = function (str) {
+        const el = document.createElement('textarea');
+        el.value = str;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+    };
+
     return {
+        activate: function () {
+            confirmDialog('Вы действительно хотите активировать тест?<br/><br/>Убедитесь что вы сохранили все данные', function () {
+                simpleAjax({
+                    url: '/change_status',
+                    data: {
+                        slug: getSlug(),
+                        is_active: 1
+                    },
+                    success: function(data) {
+                        if (data.success) {
+                            autoHideAlert('Тест активирован', 3000);
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 3000);
+                        } else {
+                            errorDialog(data.message);
+                        }
+                    }
+                });
+            });
+        },
+        deactivate: function () {
+            confirmDialog('Вы действительно хотите деактивировать тест?', function () {
+                simpleAjax({
+                    url: '/change_status',
+                    data: {
+                        slug: getSlug(),
+                        is_active: 0
+                    },
+                    success: function(data) {
+                        if (data.success) {
+                            autoHideAlert('Тест деактивирован', 3000);
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 3000);
+                        } else {
+                            errorDialog(data.message);
+                        }
+                    }
+                });
+            });
+        },
+        onLinkClick: function (url) {
+            window.open(url);
+        },
+        copyEditLink: function (url) {
+            copyText(url);
+        },
+        copyTestingLink: function (url) {
+            copyText(url);
+        },
         save: function (e) {
             var form = $('.edit-test-form'),
                 questions = QuestionEdit.prepareDataForSaving();
@@ -253,14 +312,11 @@ TestEdit = (function () {
                     form: JSON.stringify(form.serializeArray())
                 },
                 success: function(data) {
-                    debugger;
-                    // container.removeClass('disabled-container');
-                    //
-                    // if (data.success) {
-                    //     container.remove();
-                    // } else {
-                    //     errorDialog(data.message);
-                    // }
+                    if (data.success) {
+                        autoHideAlert('Данные сохранены');
+                    } else {
+                        errorDialog(data.message);
+                    }
                 }
             });
         }
@@ -268,7 +324,7 @@ TestEdit = (function () {
 })();
 
 Test = (function() {
-    var me = this;
+    var me = this, timer = 0;
 
     me.validateEmail = function($email) {
         var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
@@ -287,19 +343,22 @@ Test = (function() {
             timeString = date.toISOString().substr(14, 5);
         }
 
-        $("#test-timer").text(timeString);
+        $("#test-timer").text('Время на прохождение: ' + timeString + ' минут');
     };
 
-    me.startTest = function(testLengthInSeconds) {
+    me.startTest = function(resultId, email, testLengthInSeconds) {
         localStorage.setItem('timer', testLengthInSeconds);
+        localStorage.setItem('resultId', resultId);
+        localStorage.setItem('email', email);
 
-        var timer = setInterval(function() {
+        timer = setInterval(function() {
             if (testLengthInSeconds <= 0) {
                 clearInterval(timer);
+                localStorage.removeItem('resultId');
+                localStorage.removeItem('timer');
+                localStorage.removeItem('email');
 
-                debugger;
-//TODO: отправить результат на сервер автоматом и убрать спрятать вопросы
-
+                Test.finish($("#finish-test"));
                 return;
             }
 
@@ -313,26 +372,44 @@ Test = (function() {
 
     return {
         isStarted: function() {
-            return (localStorage.getItem('timer') != null);
-        }, 
-        isFinished: function() {
-            if (this.isStarted()) {
-                if (parseInt(localStorage.getItem('timer') <= 0)) {
-                    debugger;
-                }
-            }
+            return (localStorage.getItem('timer') != null && localStorage.getItem('resultId') != null);
+        },
+        updateData: function (callback) {
+            var slug = $('#test-preview-container').data('slug');
 
-            return false;
+            simpleAjax({
+                url: '/get_info',
+                data: {
+                    slug: slug,
+                    result_id: localStorage.getItem('resultId')
+                },
+                success: function(data) {
+                    if (data.success) {
+                        localStorage.setItem('timer', data.seconds_to_end);
+
+                        callback.call(this, data);
+                    } else {
+                        localStorage.removeItem('timer');
+                        localStorage.removeItem('resultId');
+                        localStorage.removeItem('email');
+                    }
+                }
+            });
         },
         continue: function() {
-            if (localStorage.getItem('timer') == null) {
-                return;
-            }
+            $("#test-timer").text('Вычисляется оставшееся время ...');
 
-            me.startTest(localStorage.getItem('timer'));
+            me.startTest(
+                localStorage.getItem('resultId'),
+                localStorage.getItem('email'),
+                localStorage.getItem('timer')
+            );
 
-            $("#test-preview-container").hide();
+            $("#test-process-container").data('resultid', localStorage.getItem('resultId'));
             $("#test-process-container").show();
+            $("#tested-email").val(localStorage.getItem('email'));
+            $("#tested-email").attr('disabled', true);
+            $("#start-testing").attr('disabled', true);
         },
         start: function(btn) {
             var email = $('#tested-email').val(),
@@ -344,14 +421,6 @@ Test = (function() {
             }
 
             container.addClass('disabled-container');
-
-            // localStorage.clear();
-            // localStorage.setItem('name', name);
-
-            // me.startTest(testLength * 60);
-
-            // $("#test-preview-container").hide();
-            // $("#test-process-container").show();
 
             simpleAjax({
                 url: '/start_test',
@@ -368,6 +437,8 @@ Test = (function() {
 
                         $("#tested-email").attr('disabled', true);
                         $(btn).attr('disabled', true);
+
+                        startTest(data.result_id, email, data.time);
                     } else {
                         errorDialog(data.message);
                     }
@@ -409,7 +480,11 @@ Test = (function() {
                     if (data.success) {
                         $(btn).remove();
                         autoHideAlert('Тест завершен');
-                        // $(container).remove();
+
+                        clearInterval(timer);
+                        localStorage.removeItem('timer');
+                        localStorage.removeItem('resultId');
+                        localStorage.removeItem('email');
                     } else {
                         errorDialog(data.message);
                     }
@@ -426,4 +501,12 @@ Test = (function() {
             }
         }
     };
+})();
+
+Results = (function () {
+    return {
+        show: function () {
+            window.location.href = "/r/" + getSlug();
+        }
+    }
 })();

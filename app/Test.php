@@ -73,17 +73,17 @@ class Test extends Model
             $record->$field = $value;
         }
 
-        if (!array_key_exists(self::DESCRIPTION, $data)) {
-            $record->description = '';
-        }
-
-        if (!array_key_exists(self::TEST_TIME_MINUTES, $data)) {
-            $record->test_time_minutes = 30;
-        }
-
-        if (!array_key_exists(self::IS_ACTIVE, $data)) {
-            $record->is_active = 0;
-        }
+//        if (!array_key_exists(self::DESCRIPTION, $data)) {
+//            $record->description = '';
+//        }
+//
+//        if (!array_key_exists(self::TEST_TIME_MINUTES, $data)) {
+//            $record->test_time_minutes = 30;
+//        }
+//
+//        if (!array_key_exists(self::IS_ACTIVE, $data)) {
+//            $record->is_active = 0;
+//        }
 
         $record->save();
 
@@ -113,5 +113,18 @@ class Test extends Model
         $record->save();
 
         return $record;
+    }
+
+    public static function getActiveTests(): array
+    {
+        $res = self::where([
+            self::IS_ACTIVE => 1
+        ])->get();
+
+        if (is_null($res)) {
+            return array();
+        }
+
+        return $res->toArray();
     }
 }
