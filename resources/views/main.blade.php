@@ -15,7 +15,7 @@
                   <button type="submit" class="btn btn-primary btn-lg">Начать</button>
             </form>
 
-            <div style="padding: 60px;">
+            <div class="video-container">
                 <iframe width="420" height="315" src="{{ env('VIDEO_URL', 'https://www.youtube.com/') }}" frameborder="0" allowfullscreen>
 
                 </iframe>

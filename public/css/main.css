@@ -73,6 +73,18 @@ body{
     }
 }
 
+.video-container{
+    padding: 60px;
+}
+
+@media (max-width: 600px) {
+    .video-container{
+        padding: 60px 0;
+    }
+    .video-container > iframe{
+        width: fit-content;
+    }
+}
 
 .results-preview-container{
     display: flex;
