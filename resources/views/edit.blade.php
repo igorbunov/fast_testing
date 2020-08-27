@@ -6,7 +6,7 @@
     @include('edit-main-info', ['info' => $info])
 
     <div class="results-preview-container">
-        <p style="margin-right: 10px; font-size: 20px;">Тестов пройдено: 0 шт</p>
+        <p style="margin-right: 10px; font-size: 20px;">Тестов пройдено: {{ $info['passed_tests'] }} шт</p>
         <button
             type="button"
             onclick="Results.show();"

@@ -23,7 +23,11 @@
                     <p>Ответы:</p>
                     <div id="answers-container-{{ $question['id'] }}" class="answers-container">
                         @foreach ($question['answers'] as $answer)
-                            <div id="answer-edit-container-{{ $question['id'] }}-{{ $answer['id']}}" class="input-group mb-3 edit-answer-container">
+                            <div
+                                    id="answer-edit-container-{{ $question['id'] }}-{{ $answer['id']}}"
+                                    class="input-group mb-3 edit-answer-container"
+                                    @if($answer['isUserSelect']) style="border: 4px solid @if($answer['isTrue']) green @else red @endif;" @endif
+                            >
                                 <div class="input-group-prepend" >
                                     <div class="input-group-text" data-toggle="tooltip" data-placement="right" title="Верный ответ?">
                                         <input type="checkbox" @if($answer['isTrue']) checked disabled="disabled" @endif>

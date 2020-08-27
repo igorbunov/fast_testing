@@ -25,4 +25,33 @@ class ResultAnswer extends Model
 
         return $record;
     }
+
+    public static function getByResultQuestionAnswer(int $resultId, int $questionId, int $answerId): bool
+    {
+        $res = self::where([
+            self::RESULT_ID => $resultId,
+            self::QUESTION_ID => $questionId,
+            self::ANSWER_ID => $answerId
+        ])->first();
+//        dd($res);
+        if (is_null($res)) {
+            return false;
+        }
+
+        return $res->is_checked > 0;
+    }
+
+    public static function getByResultId(int $resultId)
+    {
+//        SELECT * FROM result_answers WHERE result_id = 30
+        $res = self::where([
+            self::RESULT_ID => $resultId
+        ])->get();
+
+        if (!is_null($res)) {
+            return $res->toArray();
+        }
+
+        return [];
+    }
 }

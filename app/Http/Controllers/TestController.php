@@ -65,18 +65,19 @@ class TestController extends Controller
             $answers = Answer::getAnswersByQuestionId($question['id']);
 
             foreach ($answers as $answer) {
+                $isUserSelect = ResultAnswer::getByResultQuestionAnswer($resultId, $question['id'], $answer['id']);
+
                 $questionRow['answers'][] = [
                     'id' => $answer['id'],
                     'answerText' => $answer['answer'],
-                    'isTrue' => $answer['is_true']
+                    'isTrue' => $answer['is_true'],
+                    'isUserSelect' => $isUserSelect
                 ];
             }
 
             $questions[] = $questionRow;
         }
-
-//        dd($info);
-
+//dd($questions);
         return view('result', [
             'info' => $info,
             'questions' => $questions
@@ -400,13 +401,16 @@ class TestController extends Controller
     {
         $test = Test::getByEditSlug($editSlug);
 
+        $passedTests = Result::getByTestId($test['id']);
+
         $info = [
             'slug' => $test['edit_slug'],
             'editLink' => url("/e/{$test['edit_slug']}"),
             'testLink' => url("/t/{$test['test_slug']}"),
             'description' => $test['description'],
             'length' => $test['test_time_minutes'],
-            'isActive' => $test['is_active']
+            'isActive' => $test['is_active'],
+            'passed_tests' => count($passedTests)
         ];
 
         $questionsTmp = Question::getQuestionsByTestId($test['id']);

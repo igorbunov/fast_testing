@@ -21,22 +21,58 @@ class Result extends Model
 
     const DT_NOW = 'now()';
 
-    public static function getSuccessResult(int $resultId): int
+    public static function getSuccessResult(int $resultId): array
     {
-        $res = DB::select("SELECT 
-                SUM(right_answers * 100 / total_right_answers) / COUNT(1) AS percentage
+        $res = DB::select("SELECT
+                a.question_id,
+                IF (a.right > 0 AND a.wrong = 0, 1, 0) AS is_correct
             FROM (
             SELECT 
                 r.question_id,
-                SUM(IF (r.is_checked = 1 AND a.is_true = 1, 1, 0)) AS right_answers,
-                SUM(is_true) AS total_right_answers
+                SUM(IF (r.is_checked = 1 AND a.is_true = 1, 1, 0)) AS `right`,
+                SUM(IF (r.is_checked = 1 AND a.is_true = 0, 1, 0)) AS `wrong` 
             FROM result_answers r
             INNER JOIN answers a ON r.answer_id = a.id AND r.question_id = a.question_id
             WHERE r.result_id = {$resultId}
             GROUP BY r.question_id
-            )a");
+            ) a");
 
-        return (int) $res[0]->percentage;
+//        $res = DB::select("SELECT
+//                SUM(right_answers * 100 / total_right_answers) / COUNT(1) AS percentage
+//            FROM (
+//            SELECT
+//                r.question_id,
+//                SUM(IF (r.is_checked = 1 AND a.is_true = 1, 1, 0)) AS right_answers,
+//                SUM(is_true) AS total_right_answers
+//            FROM result_answers r
+//            INNER JOIN answers a ON r.answer_id = a.id AND r.question_id = a.question_id
+//            WHERE r.result_id = {$resultId}
+//            GROUP BY r.question_id
+//            )a");
+
+
+        if (is_null($res)) {
+            return [
+                'total' => 0,
+                'correct' => 0
+            ];
+        }
+
+        $totalQuestions = count($res);
+        $rightAnswers = 0;
+
+        foreach ($res as $row) {
+            if ($row->is_correct > 0) {
+                $rightAnswers++;
+            }
+        }
+
+        return [
+            'total' => $totalQuestions,
+            'correct' => $rightAnswers
+        ];
+
+//        return (int) $res[0]->percentage;
     }
 
     public static function getByTestId(int $testId)

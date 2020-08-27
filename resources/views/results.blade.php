@@ -49,7 +49,7 @@
                             <th scope="row">{{ $index + 1 }}</th>
                             <td>{{ $result->end_dt }}</td>
                             <td>{{ $result->email }}</td>
-                            <td>{{ $result->report }} %</td>
+                            <td>{{ $result->report['correct'] }} / {{ $result->report['total'] }}</td>
                             <td><a href="/r/{{ $info['slug'] }}/{{ $result->id }}">подробнее</a></td>
                         </tr>
                     @endforeach
