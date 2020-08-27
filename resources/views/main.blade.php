@@ -14,8 +14,14 @@
                 @csrf
                   <button type="submit" class="btn btn-primary btn-lg">Начать</button>
             </form>
+
+            <div style="padding: 60px;">
+                <iframe width="420" height="315" src="{{ env('VIDEO_URL', 'https://www.youtube.com/') }}" frameborder="0" allowfullscreen>
+
+                </iframe>
+            </div>
         </div>
-        <div class="card-footer text-muted">
+        <div class="card-footer text-muted" style="height: calc(100vh - 672px);">
           <!--2 days ago-->
         </div>
     </div>
