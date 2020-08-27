@@ -106,6 +106,11 @@ class TestController extends Controller
     {
         $test = Test::newTest();
 
+        $question = Question::newQuestion($test['id'],'Мой первый вопрос');
+
+        Answer::newAnswer($question['id'],'первый ответ',false);
+        Answer::newAnswer($question['id'],'второй ответ',false);
+
         return redirect('/e/' . $test['edit_slug']);
     }
 
@@ -438,7 +443,8 @@ class TestController extends Controller
 
 //        dd($info);
 
-        return view('edit', [
+//        return view('edit', [
+        return view('wizard.start', [
             'info' => $info,
             'questions' => $questions
         ]);

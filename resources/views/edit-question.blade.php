@@ -19,24 +19,27 @@
         @endforeach
     </div>
 
-    @if(empty($info['isActive']))
-    <div class="add-answer-btn btn-primary"
-         data-toggle="tooltip"
-         data-placement="top"
-         onclick="AnswerEdit.addNew(this, {{ $question['id'] }})"
-         title="Добавить ответ">
-        <i class="fa fa-plus"></i>
-    </div>
-    @endif
-    
-    <div class="question-main-buttons-container">
+    <div class="question-buttons-container">
         @if(empty($info['isActive']))
-        <button type="button"
-                class="btn btn-danger"
-                data-toggle="tooltip"
-                data-placement="top"
-                onclick="QuestionEdit.delete(this, {{ $question['id'] }})"
-                title="Удалить вопрос">Удалить вопрос</button>
+            <div class="add-answer-btn btn-secondary"
+                 data-toggle="tooltip"
+                 data-placement="top"
+                 onclick="AnswerEdit.addNew(this, {{ $question['id'] }})"
+                 title="Добавить ответ">
+                Добавить ответ
+                {{--<i class="fa fa-plus"></i>--}}
+            </div>
+        @endif
+
+        @if(empty($info['isActive']))
+            <button type="button"
+                    class="btn btn-danger"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    onclick="QuestionEdit.delete(this, {{ $question['id'] }})"
+                    title="Удалить вопрос">Удалить вопрос</button>
         @endif
     </div>
+
+
 </div>

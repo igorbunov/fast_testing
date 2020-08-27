@@ -6,7 +6,7 @@ Route::get('/', function () {
     return view('main');
 });
 
-Route::get('/test', 'TestController@finishExpiredTests');
+//Route::get('/test', 'TestController@finishExpiredTests');
 Route::get('/e/{editSlug}', 'TestController@showEditTest');
 Route::get('/t/{testSlug}', 'TestController@showTest');
 Route::get('/r/{editSlug}', 'TestController@showResults');
