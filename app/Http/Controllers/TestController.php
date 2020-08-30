@@ -141,8 +141,8 @@ class TestController extends Controller
             }
         }
 
-        $email = new EmailSender($data['email'], 'Создание теста');
-        $isEmailSended = $email->sendTestCreated(url("/t/{$test[Test::TEST_SLUG]}"), url("/r/{$test[Test::EDIT_SLUG]}"));
+        $emailSender = new EmailSender($data['email'], 'Создание теста');
+        $isEmailSended = $emailSender->sendTestCreated(url("/t/{$test[Test::TEST_SLUG]}"), url("/r/{$test[Test::EDIT_SLUG]}"));
 
         if (!$isEmailSended) {
             return response()->json([
@@ -441,6 +441,16 @@ class TestController extends Controller
         }
 
 //        dd($testSlug, $email, $data);
+
+        $emailSender = new EmailSender($test['email'], 'Прохождение тестирования');
+        $isEmailSended = $emailSender->sendTestPassed($email, url("/r/{$test[Test::EDIT_SLUG]}"));
+
+        if (!$isEmailSended) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка отправки сообщения на почту'
+            ]);
+        }
 
         return response()->json([
             'success' => true

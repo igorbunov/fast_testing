@@ -41,4 +41,22 @@ class EmailSender extends Controller
 
         return mail($this->toEmail, $this->subject, $message, $this->headers);
     }
+
+    public function sendTestPassed(string $email, string $resultsLink): bool
+    {
+        $message = '<html>
+            <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+                <title></title>
+            </head>
+            <body>
+                <div id="email-wrap">
+                <p>Кто-то прошел ваш тест, его email: ' . $email . '</p>
+                <p>Для просмотра результатов тестирования перейдите сюда: ' . $resultsLink . '</p>
+                </div>
+            </body>
+            </html>';
+
+        return mail($this->toEmail, $this->subject, $message, $this->headers);
+    }
 }
