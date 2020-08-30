@@ -27,7 +27,6 @@
                  onclick="AnswerEdit.addNew(this, {{ $question['id'] }})"
                  title="Добавить ответ">
                 Добавить ответ
-                {{--<i class="fa fa-plus"></i>--}}
             </div>
         @endif
 

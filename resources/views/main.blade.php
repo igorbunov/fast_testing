@@ -10,7 +10,7 @@
             <h5 class="card-title">Создайте тест</h5>
             <p class="card-text">Быстрое создание тестов, за 5 минут, без регистрации.</p>
 
-            <form method="POST" action="create_new_test">
+            <form method="POST" action="new">
                 @csrf
                   <button type="submit" class="btn btn-primary btn-lg">Начать</button>
             </form>

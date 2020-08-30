@@ -12,6 +12,12 @@ body{
     margin-top: 40px;
 }
 
+.bottom-buttons{
+    display: flex;
+    justify-content: space-evenly;
+    padding: 20px 0 40px 0;
+}
+
 .question-edit-container{
     border: 2px solid #ced4da;
     border-radius: 5px;
@@ -26,16 +32,15 @@ body{
 .delete-answer{
     margin: 10px 0px 10px 10px;
     color: #dc3545;
+    cursor: pointer;
 }
 .add-question-btn{
     margin: 0 0 0 calc(50% - 96px);
 }
 .add-answer-btn{
-    /*width: 38px;*/
-    /*height: 38px;*/
     padding: 6px 12px;
     border-radius: 5px;
-    /*margin-left: calc(50% - 19px);*/
+    cursor: pointer;
 }
 .question-main-buttons-container{
     display: flex;
@@ -95,4 +100,17 @@ body{
     display: flex;
     align-items: baseline;
     margin: 40px 0;
+}
+
+.step1-container{
+    display: block;
+}
+.step2-container{
+    display: none;
+}
+.step3-container{
+    display: none;
+}
+.step4-container{
+    display: none;
 }

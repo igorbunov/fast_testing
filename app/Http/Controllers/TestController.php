@@ -104,14 +104,58 @@ class TestController extends Controller
 
     public function startNewTest()
     {
-        $test = Test::newTest();
+        return view('wizard.create_test', []);
+//        $test = Test::newTest();
+//
+//        $question = Question::newQuestion($test['id'], '');
+//
+//        Answer::newAnswer($question['id'],'',false);
+//        Answer::newAnswer($question['id'],'',false);
+//
+//        return redirect('/e/' . $test['edit_slug']);
+    }
 
-        $question = Question::newQuestion($test['id'],'Мой первый вопрос');
+    public function saveNewTest(Request $request)
+    {
+        $data = \json_decode($request->post('params'), true);
 
-        Answer::newAnswer($question['id'],'первый ответ',false);
-        Answer::newAnswer($question['id'],'второй ответ',false);
+        if (
+            !is_array($data)
+            or empty($data['test_length'])
+            or empty($data['email'])
+            or empty($data['questions'])
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка, не верные данные'
+            ]);
+        }
 
-        return redirect('/e/' . $test['edit_slug']);
+        $test = Test::newTest($data['email'], $data['description'], $data['test_length']);
+
+        foreach ($data['questions'] as $question) {
+            $newQ = Question::newQuestion($test['id'], $question['questionText']);
+
+            foreach ($question['answers'] as $answer) {
+                Answer::newAnswer($newQ['id'], $answer['answerText'], $answer['isTrue']);
+            }
+        }
+
+        // send email
+        $to = $data['email'];
+        $subject = "Создание теста";
+        $txt = "Вы успешно создали тест. Для прохождения теста, дайте участникам ссылку: " .
+            url("/t/{$test[Test::TEST_SLUG]}") . '<br/>' .
+            'Для просмотра результатов тестирования зайдите по ссылке: ' . url("/r/{$test[Test::EDIT_SLUG]}");
+        $headers = "From: igorbunov.ua@gmail.com";
+
+        mail($to, $subject, $txt, $headers);
+
+        return response()->json([
+            'success' => true,
+            'email' => $data['email'],
+            'testSlug' => url("/t/{$test[Test::TEST_SLUG]}")
+        ]);
     }
 
     public function editTest(Request $request)
@@ -119,6 +163,7 @@ class TestController extends Controller
         $slug = $request->post('slug');
         $form = \json_decode($request->post('form'), true);
         $questions = \json_decode($request->post('questions'), true);
+        $curStep = (int) $request->post('cur_step', 0);
         $data = [];
         $test = Test::getByEditSlug($slug);
 
@@ -162,7 +207,8 @@ class TestController extends Controller
 
         return response()->json([
             'success' => true,
-            'slug' => $slug
+            'slug' => $slug,
+            'cur_step' => $curStep
         ]);
     }
 
@@ -460,12 +506,22 @@ class TestController extends Controller
         return response()->json([
             'success' => true,
             'slug' => $slug,
-            'html' => view('edit-answer', ['answer' => $answer, 'questionId' => $questionId])->render()
+            'html' => view('wizard.answer')->render()
         ]);
+//        return response()->json([
+//            'success' => true,
+//            'slug' => $slug,
+//            'html' => view('edit-answer', ['answer' => $answer, 'questionId' => $questionId])->render()
+//        ]);
     }
     
     public function getNewQuestionForm(Request $request)
     {
+        return response()->json([
+            'success' => true,
+            'html' => view('wizard.question')->render()
+        ]);
+
         $editSlug = $request->post('slug');
 
         $test = Test::getByEditSlug($editSlug);

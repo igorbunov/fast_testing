@@ -88,9 +88,72 @@ function simpleAjax(params) {
     });
 }
 
+Wizard = (function () {
+    var curStep = 0,
+        data = {
+            questions: '',
+            test_length: 0,
+            description: '',
+            email: ''
+        };
+
+    return {
+        back: function () {
+            curStep--;
+            Wizard.show();
+        },
+        next: function () {
+            if (curStep == 0) {
+                data.questions = QuestionEdit.prepareDataForSaving();
+            } else if (curStep == 1) {
+                data.test_length = $('#test-length').val();
+                data.description = $('#test-description').val();
+            } else if (curStep == 2) {
+                data.email = $('#user-email').val();
+
+                TestEdit.createTest(data, function (result) {
+                    $('#test-slug').val(result.testSlug);
+                    $('#email-address').text(result.email);
+
+                    curStep++;
+                    Wizard.show();
+                });
+
+                return;
+            }
+
+            curStep++;
+            Wizard.show();
+        },
+        show: function () {
+            if (curStep == 0) {
+                $('.step1-container').show();
+                $('.step2-container').hide();
+                $('.step3-container').hide();
+                $('.step4-container').hide();
+            } else if (curStep == 1) {
+                $('.step1-container').hide();
+                $('.step2-container').show();
+                $('.step3-container').hide();
+                $('.step4-container').hide();
+            } else if (curStep == 2) {
+                $('.step1-container').hide();
+                $('.step2-container').hide();
+                $('.step3-container').show();
+                $('.step4-container').hide();
+            } else if (curStep == 3) {
+                $('.step1-container').hide();
+                $('.step2-container').hide();
+                $('.step3-container').hide();
+                $('.step4-container').show();
+            }
+        }
+    }
+})();
+
 QuestionEdit = (function() {
-    var getAnswers = function (questionId) {
-        var answers = $("#answers-container-" + questionId),
+    var getAnswers = function (answerContainer) {
+        var answers = $(answerContainer).find(".answers-container"),
             params = {};
 
         if (answers.length > 0) {
@@ -98,21 +161,13 @@ QuestionEdit = (function() {
 
             var me = this,
                 params = {
-                    questionId: questionId,
-                    questionText: $('#edit-question-' + questionId).val(),
+                    questionText: $(answerContainer).find('textarea').val(),
                     answers: []
                 };
-                // container = $("#question-edit-container-" + questionId);
-// debugger;
-//             container.addClass('disabled-container');
 
             $(answers).children().each(function (index, answer) {
-                var answerId = $(answer).attr('id'),
-                    ids = answerId.split('answer-edit-container-')[1],
-                    idsSplitted = ids.split('-'),
-                    answerItem = {
+                var answerItem = {
                         isTrue: false,
-                        answerId: idsSplitted[1],
                         answerText: $(answer).find('input[type="text"]').val()
                     };
 
@@ -128,54 +183,26 @@ QuestionEdit = (function() {
     };
 
     return {
-        delete: function(btn, questionId) {
-            var me = this;
-            
-            confirmDialog('Удалить вопрос?', function() {
-                var container = $("#question-edit-container-" + questionId);
-                
-                container.addClass('disabled-container');
-            
-                simpleAjax({
-                    url: '/delete_question',
-                    data: {
-                        slug: getSlug(),
-                        questionId: questionId
-                    },
-                    success: function(data) {
-                        container.removeClass('disabled-container');
-
-                        if (data.success) {
-                            container.remove();
-                        } else {
-                            errorDialog(data.message);
-                        }
-                    }
-                });
-            });
-        },
         prepareDataForSaving: function () {
             var result = [];
 
             $('.question-edit-container').each(function (i, row) {
-                var questionId = $(row).attr('id').split('question-edit-container-')[1];
-
-                result.push(getAnswers(questionId));
+                result.push(getAnswers(row));
             });
 
             return result;
         },
-        addNew: function(btn) {
+        add: function (btn) {
             $(btn).attr('disabled', true);
-            
+
             simpleAjax({
                 url: '/get_question_form',
                 data: {
                     slug: getSlug()
                 },
-                success: function(data) { 
+                success: function(data) {
                     $(btn).attr('disabled', false);
-                    
+
                     if (data.success) {
                         $('.questions-container').append(data.html);
                         $("html, body").animate({ scrollTop: $(document).height() }, 1000);
@@ -184,57 +211,80 @@ QuestionEdit = (function() {
                     }
                 }
             });
+        },
+        del: function (btn) {
+            $(btn).parent().parent().remove();
         }
     };
 })();
 
 AnswerEdit = (function() {
     return {
-        delete: function(btn, questionId, answerId) {
-            var me = this;
-            
-            confirmDialog('Удалить ответ?', function() {
-                $(btn).addClass('disabled-container');
-            
-                simpleAjax({
-                    url: '/delete_answer',
-                    data: {
-                        slug: getSlug(),
-                        questionId: questionId,
-                        answerId: answerId
-                    },
-                    success: function(data) {
-                        $(btn).removeClass('disabled-container');
-
-                        if (data.success) {
-                            $("#answer-edit-container-" + questionId + "-" + answerId).remove();
-                        } else {
-                            errorDialog(data.message);
-                        }
-                    }
-                });
-            });
+        del: function (btn) {
+            $(btn).parent('.edit-answer-container').remove();
         },
-        addNew: function(btn, questionId) {
+        add: function (btn) {
             $(btn).addClass('disabled-container');
-            
+
             simpleAjax({
                 url: '/get_answer_form',
-                data: {
-                    slug: getSlug(),
-                    questionId: questionId
-                },
-                success: function(data) { 
+                success: function(data) {
                     $(btn).removeClass('disabled-container');
-                    
+
                     if (data.success) {
-                        $("#answers-container-" + questionId).append(data.html);
+                        $(btn).parent().parent().children('.answers-container').append(data.html);
                     } else {
                         errorDialog(data.message);
                     }
                 }
             });
         }
+        // ,
+        // addNew: function(btn, questionId) {
+        //     $(btn).addClass('disabled-container');
+        //
+        //     simpleAjax({
+        //         url: '/get_answer_form',
+        //         data: {
+        //             slug: getSlug(),
+        //             questionId: questionId
+        //         },
+        //         success: function(data) {
+        //             $(btn).removeClass('disabled-container');
+        //
+        //             if (data.success) {
+        //                 $("#answers-container-" + questionId).append(data.html);
+        //             } else {
+        //                 errorDialog(data.message);
+        //             }
+        //         }
+        //     });
+        // },
+        // delete: function(btn, questionId, answerId) {
+        //     var me = this;
+        //
+        //     confirmDialog('Удалить ответ?', function() {
+        //         $(btn).addClass('disabled-container');
+        //
+        //         simpleAjax({
+        //             url: '/delete_answer',
+        //             data: {
+        //                 slug: getSlug(),
+        //                 questionId: questionId,
+        //                 answerId: answerId
+        //             },
+        //             success: function(data) {
+        //                 $(btn).removeClass('disabled-container');
+        //
+        //                 if (data.success) {
+        //                     $("#answer-edit-container-" + questionId + "-" + answerId).remove();
+        //                 } else {
+        //                     errorDialog(data.message);
+        //                 }
+        //             }
+        //         });
+        //     });
+        // }
     };
 })();
 
@@ -249,6 +299,12 @@ TestEdit = (function () {
     };
 
     return {
+        copyTestLink: function () {
+            copyText($('#test-slug').val());
+        },
+        onTestLinkClick: function () {
+            window.open($('#test-slug').val());
+        },
         activate: function () {
             confirmDialog('Вы действительно хотите активировать тест?<br/><br/>Убедитесь что вы сохранили все данные', function () {
                 simpleAjax({
@@ -300,7 +356,22 @@ TestEdit = (function () {
         copyTestingLink: function (url) {
             copyText(url);
         },
-        save: function (e) {
+        createTest: function (data, callback) {
+            simpleAjax({
+                url: '/save_new',
+                data: {
+                    params: JSON.stringify(data)
+                },
+                success: function(res) {
+                    if (res.success) {
+                        callback(res);
+                    } else {
+                        errorDialog(res.message);
+                    }
+                }
+            });
+        },
+        save: function (e, callback) {
             var form = $('.edit-test-form'),
                 questions = QuestionEdit.prepareDataForSaving();
 
@@ -314,6 +385,10 @@ TestEdit = (function () {
                 success: function(data) {
                     if (data.success) {
                         autoHideAlert('Данные сохранены');
+
+                        if (callback) {
+                            callback.call(this, data);
+                        }
                     } else {
                         errorDialog(data.message);
                     }

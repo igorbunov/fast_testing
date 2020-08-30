@@ -16,8 +16,9 @@ Route::post('/get_info', 'TestController@getTestInfo');
 Route::post('/finish_test', 'TestController@finishTest');
 Route::post('/start_test', 'TestController@startTest');
 
-Route::post('/create_new_test', 'TestController@startNewTest');
-Route::get('/create_new_test', 'TestController@startNewTest');
+//Route::post('/create_new_test', 'TestController@startNewTest');
+Route::post('/new', 'TestController@startNewTest');
+Route::post('/save_new', 'TestController@saveNewTest');
 Route::post('/save_test', 'TestController@editTest');
 Route::post('/change_status', 'TestController@editTestStatus');
 

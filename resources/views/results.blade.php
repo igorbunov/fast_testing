@@ -24,6 +24,13 @@
             <div>
                 @if ($info['isActive'])
                     <span>Статус теста: активен</span>
+
+                    <button type="button"
+                        class="btn btn-danger btn-sm"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        onclick="TestEdit.deactivate()"
+                        title="Деактивировать">Деактивировать</button>
                 @else
                     <span style="color: red;">Статус теста: не активен</span>
                 @endif

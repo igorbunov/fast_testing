@@ -5,7 +5,7 @@
         </div>
     </div>
     
-    <input type="text" maxlength="200" class="form-control" value="{{ $answer['answerText'] }}" />
+    <input type="text" maxlength="200" placeholder="Введите ответ" class="form-control" value="{{ $answer['answerText'] }}" />
 
     @if(empty($info['isActive']))
     <i class="fa fa-trash delete-answer"

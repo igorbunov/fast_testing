@@ -12,10 +12,11 @@ class Test extends Model
     const DESCRIPTION = 'description';
     const TEST_TIME_MINUTES = 'test_time_minutes';
     const IS_ACTIVE = 'is_active';
+    const EMAIL = 'email';
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
 
-    public static function newTest(): Test
+    public static function newTest($email, $description, $testTime): Test
     {
         $editSlug = '';
         $testSlug = '';
@@ -30,7 +31,11 @@ class Test extends Model
 
         return self::add([
             self::TEST_SLUG => $testSlug,
-            self::EDIT_SLUG => $editSlug
+            self::EDIT_SLUG => $editSlug,
+            self::DESCRIPTION => $description,
+            self::IS_ACTIVE => 1,
+            self::TEST_TIME_MINUTES => $testTime,
+            self::EMAIL => $email
         ]);
     }
 
