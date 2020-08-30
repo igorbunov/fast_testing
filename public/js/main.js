@@ -1,10 +1,12 @@
 $( document ).ready(function() {
-    console.log( "ready!" );
-
     if (window.location.pathname.indexOf('/t/') != -1) {
         if (Test.isStarted()) {
             Test.updateData(Test.continue);
         }
+    } else if (window.location.pathname.indexOf('/new') != -1) {
+        setTimeout(function () {
+            $('#sub-question').hide();
+        }, 300);
     }
 });
 
@@ -410,7 +412,8 @@ TestEdit = (function () {
             simpleAjax({
                 url: '/save_new',
                 data: {
-                    params: JSON.stringify(data)
+                    params: JSON.stringify(data),
+                    sub_question: $('#sub-question').val()
                 },
                 success: function(res) {
                     if (res.success) {

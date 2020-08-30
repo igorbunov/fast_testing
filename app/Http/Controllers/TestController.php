@@ -117,7 +117,14 @@ class TestController extends Controller
 
     public function saveNewTest(Request $request)
     {
+        $subQuestion = $request->get('sub_question');
+
+        if (!empty($subQuestion)) {
+            return;
+        }
+
         $data = \json_decode($request->post('params'), true);
+
 
         if (
             !is_array($data)

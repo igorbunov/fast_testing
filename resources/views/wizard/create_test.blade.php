@@ -2,6 +2,8 @@
 
 @section('content')
     <div class="container">
+        <input type="text" id="sub-question" style="padding: 0;margin: 0;height: 1px;border: 0;" value="" />
+
         <div class="step1-container">
             <div class="questions-container">
                 <h4 style="text-align: center;">Шаг 1: Создайте список вопросов</h4>
