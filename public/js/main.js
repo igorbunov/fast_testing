@@ -95,6 +95,50 @@ Wizard = (function () {
             test_length: 0,
             description: '',
             email: ''
+        },
+        step1Validator = function (callback) {
+            var res = {
+                isValid: true,
+                msg: ''
+            };
+
+            if (data.questions.length == 0) {
+                res.isValid = false;
+                res.msg = 'Необходимо добавить хоть один вопрос';
+            } else {
+                $.each(data.questions, function (index, question) {
+                    if (question.questionText == '') {
+                        res.isValid = false;
+                        res.msg = 'Необходимо указать текст вопроса';
+
+                        return;
+                    } else {
+                        var isCorrectAnswerSet = false;
+
+                        $.each(question.answers, function (i, answer) {
+                            if (answer.answerText == '') {
+                                res.isValid = false;
+                                res.msg = 'Необходимо указать текст ответа';
+
+                                return;
+                            } else if (answer.isTrue) {
+                                isCorrectAnswerSet = true;
+                            }
+                        });
+
+                        if (!res.isValid) {
+                            return;
+                        } else if (!isCorrectAnswerSet) {
+                            res.isValid = false;
+                            res.msg = 'Необходимо указать правильный ответ';
+
+                            return;
+                        }
+                    }
+                });
+            }
+
+            callback.call(this, res);
         };
 
     return {
@@ -105,11 +149,31 @@ Wizard = (function () {
         next: function () {
             if (curStep == 0) {
                 data.questions = QuestionEdit.prepareDataForSaving();
+
+                step1Validator(function (response) {
+                    if (response.isValid) {
+                        curStep++;
+                        Wizard.show();
+                    } else {
+                        errorDialog(response.msg);
+                    }
+                });
+
+                return;
             } else if (curStep == 1) {
                 data.test_length = $('#test-length').val();
                 data.description = $('#test-description').val();
+
+                if (data.description == '') {
+                    return errorDialog('Необходимо указать описание теста');
+                }
             } else if (curStep == 2) {
                 data.email = $('#user-email').val();
+
+                if (!validateEmail(data.email)) {
+                    errorDialog('Ваш email пустой или не валидный');
+                    return;
+                }
 
                 TestEdit.createTest(data, function (result) {
                     $('#test-slug').val(result.testSlug);
@@ -126,26 +190,12 @@ Wizard = (function () {
             Wizard.show();
         },
         show: function () {
-            if (curStep == 0) {
-                $('.step1-container').show();
-                $('.step2-container').hide();
-                $('.step3-container').hide();
-                $('.step4-container').hide();
-            } else if (curStep == 1) {
-                $('.step1-container').hide();
-                $('.step2-container').show();
-                $('.step3-container').hide();
-                $('.step4-container').hide();
-            } else if (curStep == 2) {
-                $('.step1-container').hide();
-                $('.step2-container').hide();
-                $('.step3-container').show();
-                $('.step4-container').hide();
-            } else if (curStep == 3) {
-                $('.step1-container').hide();
-                $('.step2-container').hide();
-                $('.step3-container').hide();
-                $('.step4-container').show();
+            for (var i = 0; i < 4; i++) {
+                if (i == curStep) {
+                    $('.step' + (i + 1) + '-container').show();
+                } else {
+                    $('.step' + (i + 1) + '-container').hide();
+                }
             }
         }
     }
