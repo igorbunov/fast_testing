@@ -18,7 +18,6 @@ class EmailSender extends Controller
             "X-Mailer: PHP/" . phpversion();
         $headers .= 'MIME-Version: 1.0' . "\r\n";
         $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-//        $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
         $headers .= 'From: ' . $this->fromEmail . "\r\n";
 
         $this->headers = $headers;
@@ -32,9 +31,9 @@ class EmailSender extends Controller
                 <title></title>
             </head>
             <body>
-                <div id="email-wrap" style=\'background: #151515;color: #FFF;\'>
-                <p>Поздравляю. Вы успешно создали свой тест</p><br>
-                <p>Для прохождения теста, дайте участникам эту ссылку ' . $testLink . '</p><br>
+                <div id="email-wrap">
+                <p>Поздравляю. Вы успешно создали свой тест</p>
+                <p>Для прохождения теста, дайте участникам эту ссылку ' . $testLink . '</p>
                 <p>Для просмотра результатов тестирования перейдите сюда: ' . $resultsLink . '</p>
                 </div>
             </body>
