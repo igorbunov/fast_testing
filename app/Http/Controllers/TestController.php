@@ -141,15 +141,15 @@ class TestController extends Controller
             }
         }
 
-        // send email
-        $to = $data['email'];
-        $subject = "Создание теста";
-        $txt = "Вы успешно создали тест. Для прохождения теста, дайте участникам ссылку: " .
-            url("/t/{$test[Test::TEST_SLUG]}") . '<br/>' .
-            'Для просмотра результатов тестирования зайдите по ссылке: ' . url("/r/{$test[Test::EDIT_SLUG]}");
-        $headers = "From: igorbunov.ua@gmail.com";
+        $email = new EmailSender($data['email'], 'Создание теста');
+        $isEmailSended = $email->sendTestCreated(url("/t/{$test[Test::TEST_SLUG]}"), url("/r/{$test[Test::EDIT_SLUG]}"));
 
-        mail($to, $subject, $txt, $headers);
+        if (!$isEmailSended) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка отправки сообщения на почту'
+            ]);
+        }
 
         return response()->json([
             'success' => true,
