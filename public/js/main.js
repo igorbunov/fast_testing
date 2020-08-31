@@ -249,9 +249,6 @@ QuestionEdit = (function() {
 
             simpleAjax({
                 url: '/get_question_form',
-                data: {
-                    slug: getSlug()
-                },
                 success: function(data) {
                     $(btn).attr('disabled', false);
 
@@ -291,52 +288,6 @@ AnswerEdit = (function() {
                 }
             });
         }
-        // ,
-        // addNew: function(btn, questionId) {
-        //     $(btn).addClass('disabled-container');
-        //
-        //     simpleAjax({
-        //         url: '/get_answer_form',
-        //         data: {
-        //             slug: getSlug(),
-        //             questionId: questionId
-        //         },
-        //         success: function(data) {
-        //             $(btn).removeClass('disabled-container');
-        //
-        //             if (data.success) {
-        //                 $("#answers-container-" + questionId).append(data.html);
-        //             } else {
-        //                 errorDialog(data.message);
-        //             }
-        //         }
-        //     });
-        // },
-        // delete: function(btn, questionId, answerId) {
-        //     var me = this;
-        //
-        //     confirmDialog('Удалить ответ?', function() {
-        //         $(btn).addClass('disabled-container');
-        //
-        //         simpleAjax({
-        //             url: '/delete_answer',
-        //             data: {
-        //                 slug: getSlug(),
-        //                 questionId: questionId,
-        //                 answerId: answerId
-        //             },
-        //             success: function(data) {
-        //                 $(btn).removeClass('disabled-container');
-        //
-        //                 if (data.success) {
-        //                     $("#answer-edit-container-" + questionId + "-" + answerId).remove();
-        //                 } else {
-        //                     errorDialog(data.message);
-        //                 }
-        //             }
-        //         });
-        //     });
-        // }
     };
 })();
 
@@ -356,27 +307,6 @@ TestEdit = (function () {
         },
         onTestLinkClick: function () {
             window.open($('#test-slug').val());
-        },
-        activate: function () {
-            confirmDialog('Вы действительно хотите активировать тест?<br/><br/>Убедитесь что вы сохранили все данные', function () {
-                simpleAjax({
-                    url: '/change_status',
-                    data: {
-                        slug: getSlug(),
-                        is_active: 1
-                    },
-                    success: function(data) {
-                        if (data.success) {
-                            autoHideAlert('Тест активирован', 3000);
-                            setTimeout(function () {
-                                window.location.reload();
-                            }, 3000);
-                        } else {
-                            errorDialog(data.message);
-                        }
-                    }
-                });
-            });
         },
         deactivate: function () {
             confirmDialog('Вы действительно хотите деактивировать тест?', function () {
@@ -402,12 +332,6 @@ TestEdit = (function () {
         onLinkClick: function (url) {
             window.open(url);
         },
-        copyEditLink: function (url) {
-            copyText(url);
-        },
-        copyTestingLink: function (url) {
-            copyText(url);
-        },
         createTest: function (data, callback) {
             simpleAjax({
                 url: '/save_new',
@@ -420,30 +344,6 @@ TestEdit = (function () {
                         callback(res);
                     } else {
                         errorDialog(res.message);
-                    }
-                }
-            });
-        },
-        save: function (e, callback) {
-            var form = $('.edit-test-form'),
-                questions = QuestionEdit.prepareDataForSaving();
-
-            simpleAjax({
-                url: '/save_test',
-                data: {
-                    slug: getSlug(),
-                    questions: JSON.stringify(questions),
-                    form: JSON.stringify(form.serializeArray())
-                },
-                success: function(data) {
-                    if (data.success) {
-                        autoHideAlert('Данные сохранены');
-
-                        if (callback) {
-                            callback.call(this, data);
-                        }
-                    } else {
-                        errorDialog(data.message);
                     }
                 }
             });

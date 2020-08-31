@@ -18,7 +18,6 @@ class TestController extends Controller
 
         $info = [
             'slug' => $test['edit_slug'],
-            'editLink' => url("/e/{$test['edit_slug']}"),
             'testLink' => url("/t/{$test['test_slug']}"),
             'description' => $test['description'],
             'length' => $test['test_time_minutes'],
@@ -30,8 +29,6 @@ class TestController extends Controller
         foreach ($results as $i => $result) {
             $results[$i]->report = Result::getSuccessResult($result->id);
         }
-
-//        dd($results);
 
         return view('results', [
             'info' => $info,
@@ -45,7 +42,6 @@ class TestController extends Controller
 
         $info = [
             'slug' => $test['edit_slug'],
-            'editLink' => url("/e/{$test['edit_slug']}"),
             'testLink' => url("/t/{$test['test_slug']}"),
             'description' => $test['description'],
             'length' => $test['test_time_minutes'],
@@ -77,7 +73,7 @@ class TestController extends Controller
 
             $questions[] = $questionRow;
         }
-//dd($questions);
+
         return view('result', [
             'info' => $info,
             'questions' => $questions
@@ -105,14 +101,6 @@ class TestController extends Controller
     public function startNewTest()
     {
         return view('wizard.create_test', []);
-//        $test = Test::newTest();
-//
-//        $question = Question::newQuestion($test['id'], '');
-//
-//        Answer::newAnswer($question['id'],'',false);
-//        Answer::newAnswer($question['id'],'',false);
-//
-//        return redirect('/e/' . $test['edit_slug']);
     }
 
     public function saveNewTest(Request $request)
@@ -124,7 +112,6 @@ class TestController extends Controller
         }
 
         $data = \json_decode($request->post('params'), true);
-
 
         if (
             !is_array($data)
@@ -162,60 +149,6 @@ class TestController extends Controller
             'success' => true,
             'email' => $data['email'],
             'testSlug' => url("/t/{$test[Test::TEST_SLUG]}")
-        ]);
-    }
-
-    public function editTest(Request $request)
-    {
-        $slug = $request->post('slug');
-        $form = \json_decode($request->post('form'), true);
-        $questions = \json_decode($request->post('questions'), true);
-        $curStep = (int) $request->post('cur_step', 0);
-        $data = [];
-        $test = Test::getByEditSlug($slug);
-
-        if (is_null($test)) {
-            return response()->json([
-                'success' => false,
-                'slug' => $slug,
-                'message' => 'Ошибка получения тэста'
-            ]);
-        }
-
-        foreach ($form as $row) {
-            $data[$row['name']] = $row['value'];
-        }
-
-        $test->edit($test->id, $data);
-
-        foreach ($questions as $question) {
-            if (!Question::isLinkedToSlug($question["questionId"], $slug)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Это не ваш вопрос'
-                ]);
-            }
-
-            Question::edit($question["questionId"], $question["questionText"]);
-
-            foreach ($question['answers'] as $answer) {
-                if (!Answer::isLinkedToQuestion($answer["answerId"], $question["questionId"])) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Это не ваш ответ'
-                    ]);
-                }
-
-                $isTrue = filter_var($answer['isTrue'], FILTER_VALIDATE_BOOLEAN);
-
-                Answer::edit($answer["answerId"], $answer["answerText"], $isTrue);
-            }
-        }
-
-        return response()->json([
-            'success' => true,
-            'slug' => $slug,
-            'cur_step' => $curStep
         ]);
     }
 
@@ -269,7 +202,7 @@ class TestController extends Controller
         }
 
         unset($question);
-//dd($questions);
+
         return view('test', [ 
             'info' => [
                 'slug' => $testSlug,
@@ -320,7 +253,6 @@ class TestController extends Controller
             'success' => true,
             'result_id' => $result->id,
             'time' => $test[Test::TEST_TIME_MINUTES] * 60
-            //'html' => view('edit-answer', ['answer' => $answer, 'questionId' => $questionId])->render()
         ]);
     }
 
@@ -447,8 +379,6 @@ class TestController extends Controller
             ]);
         }
 
-//        dd($testSlug, $email, $data);
-
         $emailSender = new EmailSender($test['email'], 'Прохождение тестирования');
         $isEmailSended = $emailSender->sendTestPassed($email, url("/r/{$test[Test::EDIT_SLUG]}"));
 
@@ -461,75 +391,15 @@ class TestController extends Controller
 
         return response()->json([
             'success' => true
-            //'html' => view('edit-answer', ['answer' => $answer, 'questionId' => $questionId])->render()
         ]);
     }
-    
-    public function showEditTest(string $editSlug)
-    {
-        $test = Test::getByEditSlug($editSlug);
 
-        $passedTests = Result::getByTestId($test['id']);
-
-        $info = [
-            'slug' => $test['edit_slug'],
-            'editLink' => url("/e/{$test['edit_slug']}"),
-            'testLink' => url("/t/{$test['test_slug']}"),
-            'description' => $test['description'],
-            'length' => $test['test_time_minutes'],
-            'isActive' => $test['is_active'],
-            'passed_tests' => count($passedTests)
-        ];
-
-        $questionsTmp = Question::getQuestionsByTestId($test['id']);
-        $questions = [];
-
-        foreach ($questionsTmp as $question) {
-            $questionRow = [
-                'id' => $question['id'],
-                'questionText' => $question['question'],
-                'answers' => []
-            ];
-
-            $answers = Answer::getAnswersByQuestionId($question['id']);
-
-            foreach ($answers as $answer) {
-                $questionRow['answers'][] = [
-                    'id' => $answer['id'],
-                    'answerText' => $answer['answer'],
-                    'isTrue' => $answer['is_true']
-                ];
-            }
-
-            $questions[] = $questionRow;
-        }
-
-//        dd($info);
-
-//        return view('edit', [
-        return view('wizard.start', [
-            'info' => $info,
-            'questions' => $questions
-        ]);
-    }
-        
     public function getAnswerForm(Request $request)
     {
-        $slug = $request->post('slug');
-        $questionId = (int) $request->post('questionId');
-
-        $answer = Answer::newAnswer($questionId);
-
         return response()->json([
             'success' => true,
-            'slug' => $slug,
             'html' => view('wizard.answer')->render()
         ]);
-//        return response()->json([
-//            'success' => true,
-//            'slug' => $slug,
-//            'html' => view('edit-answer', ['answer' => $answer, 'questionId' => $questionId])->render()
-//        ]);
     }
     
     public function getNewQuestionForm(Request $request)
@@ -537,87 +407,6 @@ class TestController extends Controller
         return response()->json([
             'success' => true,
             'html' => view('wizard.question')->render()
-        ]);
-
-        $editSlug = $request->post('slug');
-
-        $test = Test::getByEditSlug($editSlug);
-
-        $question = Question::newQuestion($test['id']);
-
-        $emptyAnswer1 = Answer::newAnswer($question['id']);
-        $emptyAnswer2 = Answer::newAnswer($question['id']);
-
-        $question['answers'] = [
-            [
-                'id' => $emptyAnswer1['id'],
-                'answerText' => $emptyAnswer1['answer'],
-                'isTrue' => $emptyAnswer1['is_true']
-            ], [
-                'id' => $emptyAnswer2['id'],
-                'answerText' => $emptyAnswer2['answer'],
-                'isTrue' => $emptyAnswer2['is_true']
-            ]
-        ];
-
-        return response()->json([
-            'success' => true,
-            'slug' => $editSlug,
-            'html' => view('edit-question', ['question' => $question])->render()
-        ]);
-    }
-
-    public function deleteQuestion(Request $request)
-    {
-        $slug = $request->post('slug');
-        $questionId = (int) $request->post('questionId');
-
-        if (!Question::isLinkedToSlug($questionId, $slug)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'its not your question'
-            ]);
-        }
-
-        try {
-            Answer::deleteByQuestionId($questionId);
-            Question::deleteById($questionId);
-        } catch (\Exception $err) {
-            return response()->json([
-                'success' => false,
-                'message' => $err->getMessage()
-            ]);
-        }
-
-        return response()->json([
-            'success' => true
-        ]);
-    }
-    
-    public function deleteAnswer(Request $request)
-    {
-        $slug = $request->post('slug');
-        $questionId = (int) $request->post('questionId');
-        $answerId = (int) $request->post('answerId');
-
-        if (!Question::isLinkedToSlug($questionId, $slug)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'its not your question'
-            ]);
-        }
-
-        if (!Answer::isLinkedToQuestion($answerId, $questionId)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'its not your answer'
-            ]);
-        }
-
-        Answer::deleteById($answerId);
-
-        return response()->json([
-            'success' => true
         ]);
     }
 }
