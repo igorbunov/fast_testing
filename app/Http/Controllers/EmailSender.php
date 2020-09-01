@@ -32,9 +32,9 @@ class EmailSender extends Controller
             </head>
             <body>
                 <div id="email-wrap">
-                <p>Поздравляю. Вы успешно создали свой тест</p>
-                <p>Для прохождения теста, дайте участникам эту ссылку ' . $testLink . '</p>
-                <p>Для просмотра результатов тестирования перейдите сюда: ' . $resultsLink . '</p>
+                <p>' . __('view.congratulations you have successfully created a test') . '</p>
+                <p>' . __('messages.to take the test give the participants this link') . ' ' . $testLink . '</p>
+                <p>' . __('messages.to view test results go here') . ': ' . $resultsLink . '</p>
                 </div>
             </body>
             </html>';
@@ -51,8 +51,8 @@ class EmailSender extends Controller
             </head>
             <body>
                 <div id="email-wrap">
-                <p>Кто-то прошел ваш тест, его email: ' . $email . '</p>
-                <p>Для просмотра результатов тестирования перейдите сюда: ' . $resultsLink . '</p>
+                <p>' . __('messages.someone passed your test their email') . ': ' . $email . '</p>
+                <p>' . __('messages.to view test results go here') . ': ' . $resultsLink . '</p>
                 </div>
             </body>
             </html>';

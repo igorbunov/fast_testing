@@ -33,7 +33,7 @@ class ResultAnswer extends Model
             self::QUESTION_ID => $questionId,
             self::ANSWER_ID => $answerId
         ])->first();
-//        dd($res);
+
         if (is_null($res)) {
             return false;
         }
@@ -43,7 +43,6 @@ class ResultAnswer extends Model
 
     public static function getByResultId(int $resultId)
     {
-//        SELECT * FROM result_answers WHERE result_id = 30
         $res = self::where([
             self::RESULT_ID => $resultId
         ])->get();

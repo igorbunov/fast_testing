@@ -2,29 +2,16 @@
 
 @section('content')
 
-    <div class="card text-center">
-        <div class="card-header">
-          <!--Featured-->
-        </div>
-        <div class="card-body">
-            <h5 class="card-title">Создайте тест</h5>
-            <p class="card-text">Быстрое создание тестов, за 5 минут, без регистрации.</p>
+<h5 class="card-title">@lang('view.create test')</h5>
+<p class="card-text">@lang('view.fast test creation, 5 minutes without registration')</p>
 
-            <form method="POST" action="new">
-                @csrf
-                  <button type="submit" class="btn btn-primary btn-lg">Начать</button>
-            </form>
+<form method="POST" action="new">
+    @csrf
+      <button type="submit" class="btn btn-primary btn-lg">@lang('view.start')</button>
+</form>
 
-            <div class="video-container">
-                <iframe width="420" height="315" src="{{ env('VIDEO_URL', 'https://www.youtube.com/') }}" frameborder="0" allowfullscreen>
-
-                </iframe>
-            </div>
-        </div>
-        <div class="card-footer text-muted" style="height: calc(100vh - 672px);">
-          <!--2 days ago-->
-        </div>
-    </div>
-
+<div class="video-container">
+<iframe width="420" height="315" src="{{ env('VIDEO_URL', 'https://www.youtube.com/') }}" frameborder="0" allowfullscreen>
+</iframe>
 
 @stop

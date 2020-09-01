@@ -33,7 +33,7 @@ class Question extends Model
         $record = self::find($questionId);
 
         if (is_null($record)) {
-            throw new \Exception('Не найден тест');
+            throw new \Exception(__('messages.test not found'));
         }
 
         $record->destroy($questionId);
@@ -65,7 +65,7 @@ class Question extends Model
         $record = self::find($id);
 
         if (is_null($record)) {
-            throw new \Exception('Не найден тест');
+            throw new \Exception(__('messages.test not found'));
         }
 
         $record->question = $questionText;

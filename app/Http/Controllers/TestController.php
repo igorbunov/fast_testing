@@ -121,7 +121,7 @@ class TestController extends Controller
         ) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка, не верные данные'
+                'message' => __('messages.error wrong data')
             ]);
         }
 
@@ -135,13 +135,13 @@ class TestController extends Controller
             }
         }
 
-        $emailSender = new EmailSender($data['email'], 'Создание теста');
+        $emailSender = new EmailSender($data['email'], __('messages.test creation'));
         $isEmailSended = $emailSender->sendTestCreated(url("/t/{$test[Test::TEST_SLUG]}"), url("/r/{$test[Test::EDIT_SLUG]}"));
 
         if (!$isEmailSended) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка отправки сообщения на почту'
+                'message' => __('messages.error sending message to email')
             ]);
         }
 
@@ -163,7 +163,7 @@ class TestController extends Controller
             return response()->json([
                 'success' => false,
                 'slug' => $slug,
-                'message' => 'Ошибка получения теста'
+                'message' => __('messages.error getting test')
             ]);
         }
 
@@ -223,7 +223,7 @@ class TestController extends Controller
         if (empty($email)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Email не может быть пустым'
+                'message' => __('messages.email cant be empty')
             ]);
         }
 
@@ -232,7 +232,7 @@ class TestController extends Controller
         if (empty($test)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Нет найден тест'
+                'message' => __('messages.test not found')
             ]);
         }
 
@@ -245,7 +245,7 @@ class TestController extends Controller
         if (empty($result)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка начала тестирования'
+                'message' => __('messages.error start testing')
             ]);
         }
 
@@ -267,7 +267,7 @@ class TestController extends Controller
         if (is_null($result)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Нет найден результат'
+                'message' => __('messages.result not found')
             ]);
         }
 
@@ -276,14 +276,14 @@ class TestController extends Controller
         if ($result[Result::TEST_ID] != $test['id']) {
             return response()->json([
                 'success' => false,
-                'message' => 'Результат не от этого теста'
+                'message' => __('messages.this result is from another test')
             ]);
         }
 
         if ($result[Result::STATUS] == Result::STATUS_FINISHED) {
             return response()->json([
                 'success' => false,
-                'message' => 'Время вышло'
+                'message' => __('messages.time is out')
             ]);
         }
 
@@ -303,13 +303,13 @@ class TestController extends Controller
         if (empty($email)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Email не может быть пустым'
+                'message' => __('messages.email cant be empty')
             ]);
         }
         if (empty($data)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Нет ответов'
+                'message' => __('messages.no answers')
             ]);
         }
 
@@ -318,7 +318,7 @@ class TestController extends Controller
         if (empty($test)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Нет найден тест'
+                'message' => __('messages.test not found')
             ]);
         }
 
@@ -331,14 +331,14 @@ class TestController extends Controller
             if (!Question::isLinkedToSlug($questionId, $test[Test::EDIT_SLUG])) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Это не ваши вопросы'
+                    'message' => __('messages.these are not your questions')
                 ]);
             }
 
             if (!Answer::isLinkedToQuestion($answerId, $questionId)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Это не ваши ответы'
+                    'message' => __('messages.these are not your answers')
                 ]);
             }
         }
@@ -348,7 +348,7 @@ class TestController extends Controller
         if (is_null($result)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Нет найден результат'
+                'message' => __('messages.result not found')
             ]);
         }
 
@@ -357,7 +357,7 @@ class TestController extends Controller
         if ($result[Result::TEST_ID] != $test['id']) {
             return response()->json([
                 'success' => false,
-                'message' => 'Результат не от этого теста'
+                'message' => __('messages.this result is from another test')
             ]);
         }
 
@@ -379,13 +379,13 @@ class TestController extends Controller
             ]);
         }
 
-        $emailSender = new EmailSender($test['email'], 'Прохождение тестирования');
+        $emailSender = new EmailSender($test['email'], __('messages.test passing'));
         $isEmailSended = $emailSender->sendTestPassed($email, url("/r/{$test[Test::EDIT_SLUG]}"));
 
         if (!$isEmailSended) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка отправки сообщения на почту'
+                'message' => __('messages.error sending message to email')
             ]);
         }
 

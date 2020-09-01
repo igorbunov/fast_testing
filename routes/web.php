@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
+//    \Illuminate\Support\Facades\App::setLocale('us');
+
     return view('main');
 });
 

@@ -8,6 +8,10 @@ $( document ).ready(function() {
             $('#sub-question').hide();
         }, 300);
     }
+
+    $(function(){
+        $('.selectpicker').selectpicker();
+    });
 });
 
 function confirmDialog(question, callback) {
