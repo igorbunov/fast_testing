@@ -7,16 +7,15 @@
         <p class="card-text">Примечание: {{ $info['description'] }}</p>
     @endif
 
-    <form>
-        <input type="email"
-            class="form-control"
-            style="margin: 16px 0;"
-            id="tested-email"
-            placeholder="Ваш email"
-            maxlength="50"
-            required>
-        <p id="test-timer">Время на прохождение: {{ $info['length'] }} минут</p>
-      </form>
+    <input type="email"
+        class="form-control"
+        style="margin: 16px 0;"
+        id="tested-email"
+        placeholder="Ваш email"
+        maxlength="50"
+        onkeyup="Test.onEmailEnter(event)"
+        required>
+    <p id="test-timer">Время на прохождение: {{ $info['length'] }} минут</p>
 
     <button type="button" id="start-testing"
         class="btn btn-lg btn-success"

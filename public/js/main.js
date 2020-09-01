@@ -439,6 +439,11 @@ Test = (function() {
             $("#tested-email").attr('disabled', true);
             $("#start-testing").attr('disabled', true);
         },
+        onEmailEnter: function (e) {
+            if (e.keyCode == 13) {
+                Test.start($('#start-testing'));
+            }
+        },
         start: function(btn) {
             var email = $('#tested-email').val(),
                 container = $('#test-preview-container');
