@@ -9,7 +9,7 @@ and open the template in the editor.
 */
 
 body{
-    margin-top: 40px;
+    /*margin-top: 40px;*/
 }
 
 .bottom-buttons{
@@ -113,4 +113,52 @@ body{
 }
 .step4-container{
     display: none;
+}
+
+.header {
+    margin: 0 auto;
+    width: 420px;
+    justify-content: space-between;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.header > div {
+    flex-grow: 1;
+}
+.header > :nth-child(2) {
+    flex-grow: 6;
+}
+
+.card {
+    border-bottom: 0px;
+}
+
+
+.flag-icon {
+    position: relative;
+    display: inline-block;
+    width: 1.33333333em;
+    line-height: 1em;
+}
+
+.flag-icon, .flag-icon-background {
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: 50%;
+    width: 18px;
+    height: 18px;
+    vertical-align: sub;
+
+}
+.flag-icon-us {
+    background-image: url('/img/us.svg');
+}
+.flag-icon-ru {
+    background-image: url('/img/ru.svg');
+}
+.flag-icon-ua {
+    background-image: url('/img/ua.svg');
 }

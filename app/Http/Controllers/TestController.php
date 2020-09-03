@@ -12,6 +12,33 @@ use Illuminate\Support\Facades\Log;
 
 class TestController extends Controller
 {
+    public $translateValues = [];
+
+    public function prepareTranslate()
+    {
+        $this->translateValues = [
+            'time for testing' => __('view.time for testing'),
+            'minutes' => __('view.minutes'),
+            'calculating time for testing' => __('view.calculating time for testing'),
+            'you must specify the text of the question' => __('messages.you must specify the text of the question'),
+            'you must specify the response text' => __('messages.you must specify the response text'),
+            'you must provide the correct answer' => __('messages.you must provide the correct answer'),
+            'you must add at least one question' => __('messages.you must add at least one question'),
+            'confirmation' => __('messages.confirmation'),
+            'yes' => __('messages.yes'),
+            'no' => __('messages.no'),
+            'error' => __('messages.error'),
+            'close' => __('messages.close'),
+            'system message' => __('messages.system message'),
+            'test description required' => __('messages.test description required'),
+            'your email is empty or not valid' => __('messages.your email is empty or not valid'),
+            'do you really want to deactivate the test' => __('messages.do you really want to deactivate the test'),
+            'test deactivated' => __('messages.test deactivated'),
+            'you must enter your email' => __('messages.you must enter your email'),
+            'test completed' => __('messages.test completed'),
+        ];
+    }
+
     public function showResults($editSlug)
     {
         $test = Test::getByEditSlug($editSlug);
@@ -30,9 +57,12 @@ class TestController extends Controller
             $results[$i]->report = Result::getSuccessResult($result->id);
         }
 
+        $this->prepareTranslate();
+
         return view('results', [
             'info' => $info,
-            'results' => $results
+            'results' => $results,
+            'translateValues' => $this->translateValues
         ]);
     }
 
@@ -74,9 +104,12 @@ class TestController extends Controller
             $questions[] = $questionRow;
         }
 
+        $this->prepareTranslate();
+
         return view('result', [
             'info' => $info,
-            'questions' => $questions
+            'questions' => $questions,
+            'translateValues' => $this->translateValues
         ]);
     }
 
@@ -100,7 +133,22 @@ class TestController extends Controller
 
     public function startNewTest()
     {
-        return view('wizard.create_test', []);
+        $this->prepareTranslate();
+
+        return view('wizard.create_test', [
+            'translateValues' => $this->translateValues
+        ]);
+    }
+
+    public function setLanguage(Request $request)
+    {
+        $lang = $request->post('lang', 'en');
+
+        session(['lang' => $lang]);
+
+        return response()->json([
+            'success' => true
+        ]);
     }
 
     public function saveNewTest(Request $request)
@@ -121,7 +169,7 @@ class TestController extends Controller
         ) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка, не верные данные'
+                'message' => __('messages.error wrong data')
             ]);
         }
 
@@ -135,13 +183,13 @@ class TestController extends Controller
             }
         }
 
-        $emailSender = new EmailSender($data['email'], 'Создание теста');
+        $emailSender = new EmailSender($data['email'], __('messages.test creation'));
         $isEmailSended = $emailSender->sendTestCreated(url("/t/{$test[Test::TEST_SLUG]}"), url("/r/{$test[Test::EDIT_SLUG]}"));
 
         if (!$isEmailSended) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка отправки сообщения на почту'
+                'message' => __('messages.error sending message to email')
             ]);
         }
 
@@ -163,7 +211,7 @@ class TestController extends Controller
             return response()->json([
                 'success' => false,
                 'slug' => $slug,
-                'message' => 'Ошибка получения теста'
+                'message' => __('messages.error getting test')
             ]);
         }
 
@@ -186,14 +234,14 @@ class TestController extends Controller
         }
 
         if (empty($test->is_active)) {
-            return 'Тест не активен';
+            return __('messages.test is not active');
         }
+
         $questions = Question::getQuestionsByTestId($test->id);
 
         if (count($questions) == 0) {
             return redirect('main');
         }
-
 
         foreach ($questions as &$question) {
             $answers = Answer::getAnswersByQuestionId($question['id']);
@@ -202,6 +250,7 @@ class TestController extends Controller
         }
 
         unset($question);
+        $this->prepareTranslate();
 
         return view('test', [ 
             'info' => [
@@ -211,7 +260,8 @@ class TestController extends Controller
                 'length' => $test->test_time_minutes,
                 'questions_count' => count($questions)
             ],
-            'questions' => $questions
+            'questions' => $questions,
+            'translateValues' => $this->translateValues
         ]);
     }
 
@@ -223,7 +273,7 @@ class TestController extends Controller
         if (empty($email)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Email не может быть пустым'
+                'message' => __('messages.email cant be empty')
             ]);
         }
 
@@ -232,7 +282,7 @@ class TestController extends Controller
         if (empty($test)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Нет найден тест'
+                'message' => __('messages.test not found')
             ]);
         }
 
@@ -245,7 +295,7 @@ class TestController extends Controller
         if (empty($result)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка начала тестирования'
+                'message' => __('messages.error start testing')
             ]);
         }
 
@@ -267,7 +317,7 @@ class TestController extends Controller
         if (is_null($result)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Нет найден результат'
+                'message' => __('messages.result not found')
             ]);
         }
 
@@ -276,14 +326,14 @@ class TestController extends Controller
         if ($result[Result::TEST_ID] != $test['id']) {
             return response()->json([
                 'success' => false,
-                'message' => 'Результат не от этого теста'
+                'message' => __('messages.this result is from another test')
             ]);
         }
 
         if ($result[Result::STATUS] == Result::STATUS_FINISHED) {
             return response()->json([
                 'success' => false,
-                'message' => 'Время вышло'
+                'message' => __('messages.time is out')
             ]);
         }
 
@@ -303,13 +353,13 @@ class TestController extends Controller
         if (empty($email)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Email не может быть пустым'
+                'message' => __('messages.email cant be empty')
             ]);
         }
         if (empty($data)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Нет ответов'
+                'message' => __('messages.no answers')
             ]);
         }
 
@@ -318,7 +368,7 @@ class TestController extends Controller
         if (empty($test)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Нет найден тест'
+                'message' => __('messages.test not found')
             ]);
         }
 
@@ -331,14 +381,14 @@ class TestController extends Controller
             if (!Question::isLinkedToSlug($questionId, $test[Test::EDIT_SLUG])) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Это не ваши вопросы'
+                    'message' => __('messages.these are not your questions')
                 ]);
             }
 
             if (!Answer::isLinkedToQuestion($answerId, $questionId)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Это не ваши ответы'
+                    'message' => __('messages.these are not your answers')
                 ]);
             }
         }
@@ -348,7 +398,7 @@ class TestController extends Controller
         if (is_null($result)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Нет найден результат'
+                'message' => __('messages.result not found')
             ]);
         }
 
@@ -357,7 +407,7 @@ class TestController extends Controller
         if ($result[Result::TEST_ID] != $test['id']) {
             return response()->json([
                 'success' => false,
-                'message' => 'Результат не от этого теста'
+                'message' => __('messages.this result is from another test')
             ]);
         }
 
@@ -379,13 +429,13 @@ class TestController extends Controller
             ]);
         }
 
-        $emailSender = new EmailSender($test['email'], 'Прохождение тестирования');
+        $emailSender = new EmailSender($test['email'], __('messages.test passing'));
         $isEmailSended = $emailSender->sendTestPassed($email, url("/r/{$test[Test::EDIT_SLUG]}"));
 
         if (!$isEmailSended) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка отправки сообщения на почту'
+                'message' => __('messages.error sending message to email')
             ]);
         }
 

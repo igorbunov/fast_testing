@@ -8,24 +8,41 @@ $( document ).ready(function() {
             $('#sub-question').hide();
         }, 300);
     }
+
+    $(function(){
+        $('.selectpicker').selectpicker('val', document.documentElement.lang);
+    });
+
+    $('.selectpicker').on('change', function(e){
+        simpleAjax({
+            url: '/set_lang',
+            data: {
+                slug: getSlug(),
+                lang: this.value
+            },
+            success: function() {
+                window.location.reload();
+            }
+        });
+    });
 });
 
 function confirmDialog(question, callback) {
     var me = this;
     
     $.confirm({
-        title: 'Подтверждение',
+        title: window.translation['confirmation'],
         content: question,
         buttons: {
             confirm: {
-                text: 'Да',
+                text: window.translation['yes'],
                 btnClass: 'btn btn-success',
                 action: function() {
                     callback.call(me);
                 }
             }, 
             cancel: {
-                text: 'Нет',
+                text: window.translation['no'],
                 btnClass: 'btn btn-light'
             }
         }
@@ -34,13 +51,13 @@ function confirmDialog(question, callback) {
 
 function errorDialog(msg) {
     $.confirm({
-        title: 'Ошибка!',
+        title: window.translation['error'] + '!',
         content: msg,
         type: 'red',
         typeAnimated: true,
         buttons: {
             close: {
-                text: 'Закрыть',
+                text: window.translation['close'],
                 btnClass: 'btn btn-light'
             }
         }
@@ -51,7 +68,7 @@ function autoHideAlert(msg, timer){
     timer = timer || 300;
 
     $.alert({
-        title: 'Системное сообщение',
+        title: window.translation['system message'],
         content: msg,
         autoClose: 'ok|' + timer,
     });
@@ -106,12 +123,12 @@ Wizard = (function () {
 
             if (data.questions.length == 0) {
                 res.isValid = false;
-                res.msg = 'Необходимо добавить хоть один вопрос';
+                res.msg = window.translation['you must add at least one question'];
             } else {
                 $.each(data.questions, function (index, question) {
                     if (question.questionText == '') {
                         res.isValid = false;
-                        res.msg = 'Необходимо указать текст вопроса';
+                        res.msg = window.translation['you must specify the text of the question'];
 
                         return;
                     } else {
@@ -120,7 +137,7 @@ Wizard = (function () {
                         $.each(question.answers, function (i, answer) {
                             if (answer.answerText == '') {
                                 res.isValid = false;
-                                res.msg = 'Необходимо указать текст ответа';
+                                res.msg = window.translation['you must specify the response text'];
 
                                 return;
                             } else if (answer.isTrue) {
@@ -132,7 +149,7 @@ Wizard = (function () {
                             return;
                         } else if (!isCorrectAnswerSet) {
                             res.isValid = false;
-                            res.msg = 'Необходимо указать правильный ответ';
+                            res.msg = window.translation['you must provide the correct answer'];
 
                             return;
                         }
@@ -167,13 +184,13 @@ Wizard = (function () {
                 data.description = $('#test-description').val();
 
                 if (data.description == '') {
-                    return errorDialog('Необходимо указать описание теста');
+                    return errorDialog(window.translation['test description required']);
                 }
             } else if (curStep == 2) {
                 data.email = $('#user-email').val();
 
                 if (!validateEmail(data.email)) {
-                    errorDialog('Ваш email пустой или не валидный');
+                    errorDialog(window.translation['your email is empty or not valid']);
                     return;
                 }
 
@@ -309,7 +326,7 @@ TestEdit = (function () {
             window.open($('#test-slug').val());
         },
         deactivate: function () {
-            confirmDialog('Вы действительно хотите деактивировать тест?', function () {
+            confirmDialog(window.translation['do you really want to deactivate the test'] + '?', function () {
                 simpleAjax({
                     url: '/change_status',
                     data: {
@@ -318,7 +335,7 @@ TestEdit = (function () {
                     },
                     success: function(data) {
                         if (data.success) {
-                            autoHideAlert('Тест деактивирован', 3000);
+                            autoHideAlert(window.translation['test deactivated'], 3000);
                             setTimeout(function () {
                                 window.location.reload();
                             }, 3000);
@@ -371,7 +388,7 @@ Test = (function() {
             timeString = date.toISOString().substr(14, 5);
         }
 
-        $("#test-timer").text('Время на прохождение: ' + timeString + ' минут');
+        $("#test-timer").text(window.translation['time for testing'] + ': ' + timeString + ' ' + window.translation['minutes']);
     };
 
     me.startTest = function(resultId, email, testLengthInSeconds) {
@@ -425,7 +442,7 @@ Test = (function() {
             });
         },
         continue: function() {
-            $("#test-timer").text('Вычисляется оставшееся время ...');
+            $("#test-timer").text(window.translation['calculating time for testing'] + ' ...');
 
             me.startTest(
                 localStorage.getItem('resultId'),
@@ -439,12 +456,17 @@ Test = (function() {
             $("#tested-email").attr('disabled', true);
             $("#start-testing").attr('disabled', true);
         },
+        onEmailEnter: function (e) {
+            if (e.keyCode == 13) {
+                Test.start($('#start-testing'));
+            }
+        },
         start: function(btn) {
             var email = $('#tested-email').val(),
                 container = $('#test-preview-container');
 
             if (!validateEmail(email)) {
-                errorDialog('Ваш email пустой или не валидный');
+                errorDialog(window.translation['your email is empty or not valid']);
                 return;
             }
 
@@ -480,7 +502,7 @@ Test = (function() {
                 resultId = $("#test-process-container").data('resultid');
 
             if (testedEmail == '' || !validateEmail(testedEmail)) {
-                errorDialog('Необходимо ввести ваш email');
+                errorDialog(window.translation['you must enter your email']);
                 return;
             }
 
@@ -507,7 +529,7 @@ Test = (function() {
 
                     if (data.success) {
                         $(btn).remove();
-                        autoHideAlert('Тест завершен');
+                        autoHideAlert(window.translation['test completed']);
 
                         clearInterval(timer);
                         localStorage.removeItem('timer');

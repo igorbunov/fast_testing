@@ -7,12 +7,13 @@
     <meta name="keywords" content="Тест, Тестирование, Обучающие тесты, Платформа для создания тестов, Школьное тестирование, Тестирование без регистрации, Создать тест без регистрации" />
     <meta name="author" content="igorbunov.ua@gmail.com" />
     <meta name="description" content="На данном сайте можно создавать свое тестирование за 5 минут, без регистрации" />
-    <title>Создай свой тест</title>
+    <title>@lang('view.create your test')</title>
     
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
     <link href="{{ asset('public/css/main.css') }}@php echo '?' . rand(100,1000).md5(date('YmdHis')); @endphp" rel="stylesheet" media="screen">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -26,15 +27,42 @@
     </script>
 
 
-    <script data-ad-client="ca-pub-9224550511530884" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+        window.translation = {
+            @if (!empty($translateValues))
+                @foreach ($translateValues as $key => $value)
+                    '{{ $key }}': '{{ $value }}',
+                @endforeach
+            @endif
+        };
+    </script>
+
+    {{--<script data-ad-client="ca-pub-9224550511530884" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>--}}
 
 </head>
     <body>
-        @isset($error)
-            <div class="error">{{ $error }}</div>
-        @endisset
+        <div class="header">
+            <div><a href="/">@lang('view.main')</a></div>
+            <div></div>
+            <div><a href="/feedback">@lang('view.feedback')</a></div>
+            <div>
+                <select class="selectpicker" data-width="fit">
+                    <option data-content='<span class="flag-icon flag-icon-us"></span> English'>en</option>
+                    <option data-content='<span class="flag-icon flag-icon-ru"></span> Русский'>ru</option>
+                    <option data-content='<span class="flag-icon flag-icon-ua"></span> Українська'>ua</option>
+                </select>
+            </div>
+        </div>
+
+
+        <div class="card text-center">
+            <div class="card-header"></div>
+            <div class="card-body">
 
         @yield('content')
+
+            </div>
+        </div>
 
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -44,6 +72,11 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+
+        {{--<!-- (Optional) Latest compiled and minified JavaScript translation files -->--}}
+        {{--<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/i18n/defaults-*.min.js"></script>--}}
         <script type="text/javascript" src="{{ asset('public/js/main.js') }}@php echo '?' . rand(100,1000).md5(date('YmdHis')); @endphp"></script>
     
     

@@ -67,7 +67,7 @@ class Test extends Model
         $record = self::find($id);
 
         if (is_null($record)) {
-            throw new \Exception('Не найден тест');
+            throw new \Exception(__('messages.test not found'));
         }
 
         foreach ($data as $field => $value) {
@@ -77,18 +77,6 @@ class Test extends Model
 
             $record->$field = $value;
         }
-
-//        if (!array_key_exists(self::DESCRIPTION, $data)) {
-//            $record->description = '';
-//        }
-//
-//        if (!array_key_exists(self::TEST_TIME_MINUTES, $data)) {
-//            $record->test_time_minutes = 30;
-//        }
-//
-//        if (!array_key_exists(self::IS_ACTIVE, $data)) {
-//            $record->is_active = 0;
-//        }
 
         $record->save();
 

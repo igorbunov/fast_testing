@@ -27,7 +27,7 @@ class Answer extends Model
         $record = self::find($answerId);
 
         if (is_null($record)) {
-            throw new \Exception('Не найден ответ');
+            throw new \Exception(__('messages.answer not found'));
         }
 
         $record->delete();
@@ -76,7 +76,7 @@ class Answer extends Model
 
         if (is_null($record)) {
 //            dd($id, $record);
-            throw new \Exception('Не найден ответ');
+            throw new \Exception(__('messages.answer not found'));
         }
 
         return $record->question_id;
@@ -87,7 +87,7 @@ class Answer extends Model
         $record = self::find($id);
 
         if (is_null($record)) {
-            throw new \Exception('Не найден ответ');
+            throw new \Exception(__('messages.answer not found'));
         }
 
         $record->answer = $answerText;

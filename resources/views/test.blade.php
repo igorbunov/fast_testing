@@ -4,23 +4,22 @@
 
 <div id="test-preview-container" class="container" style="padding: 20px; border: 1px solid blue;" data-slug="{{ $info['slug'] }}">
     @if(isset($info['description']))
-        <p class="card-text">Примечание: {{ $info['description'] }}</p>
+        <p class="card-text">@lang('view.description'): {{ $info['description'] }}</p>
     @endif
 
-    <form>
-        <input type="email"
-            class="form-control"
-            style="margin: 16px 0;"
-            id="tested-email"
-            placeholder="Ваш email"
-            maxlength="50"
-            required>
-        <p id="test-timer">Время на прохождение: {{ $info['length'] }} минут</p>
-      </form>
+    <input type="email"
+        class="form-control"
+        style="margin: 16px 0;"
+        id="tested-email"
+        placeholder="@lang('view.enter your email')"
+        maxlength="50"
+        onkeyup="Test.onEmailEnter(event)"
+        required>
+    <p id="test-timer">@lang('view.time for testing'): {{ $info['length'] }} @lang('view.minutes')</p>
 
     <button type="button" id="start-testing"
         class="btn btn-lg btn-success"
-        onclick="Test.start(this);">Начать</button>
+        onclick="Test.start(this);">@lang('view.start')</button>
 </div>
 
 <div id="test-process-container" class="container" style="display: none;padding: 20px;" data-resultid="0" data-slug="{{ $info['slug'] }}">
@@ -47,7 +46,7 @@
     </div>
 
     <div>
-        <button id="finish-test" type="button" class="btn btn-success" onclick="Test.finish(this);">Закончить тест</button>
+        <button id="finish-test" type="button" class="btn btn-success" onclick="Test.finish(this);">@lang('view.finish test')</button>
     </div>
 </div>
 
