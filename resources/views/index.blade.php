@@ -27,6 +27,16 @@
     </script>
 
 
+    <script>
+        window.translation = {
+            @if (!empty($translateValues))
+                @foreach ($translateValues as $key => $value)
+                    '{{ $key }}': '{{ $value }}',
+                @endforeach
+            @endif
+        };
+    </script>
+
     {{--<script data-ad-client="ca-pub-9224550511530884" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>--}}
 
 </head>
@@ -37,9 +47,9 @@
             <div><a href="/feedback">@lang('view.feedback')</a></div>
             <div>
                 <select class="selectpicker" data-width="fit">
-                    <option data-content='<span class="flag-icon flag-icon-us"></span> English'>English</option>
-                    <option data-content='<span class="flag-icon flag-icon-ru"></span> Русский'>Русский</option>
-                    <option data-content='<span class="flag-icon flag-icon-ua"></span> Українська'>Українська</option>
+                    <option data-content='<span class="flag-icon flag-icon-us"></span> English'>en</option>
+                    <option data-content='<span class="flag-icon flag-icon-ru"></span> Русский'>ru</option>
+                    <option data-content='<span class="flag-icon flag-icon-ua"></span> Українська'>ua</option>
                 </select>
             </div>
         </div>

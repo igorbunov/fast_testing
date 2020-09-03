@@ -146,7 +146,7 @@
             <h4 style="text-align: center;">@lang('view.Step 3 set your email')</h4>
 
             <div class="form-group">
-                <label for="user-email">@lang('Email address we will send data there to pass the test and view the results')</label>
+                <label for="user-email">@lang('view.email address we will send data there to pass the test and view the results')</label>
                 <input type="email" class="form-control" id="user-email" aria-describedby="emailHelp" placeholder="@lang('view.enter your email')">
                 <small id="emailHelp" class="form-text text-muted">@lang('view.Nobody will know your email address')</small>
             </div>

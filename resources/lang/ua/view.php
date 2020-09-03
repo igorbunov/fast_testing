@@ -22,10 +22,11 @@ return [
     'Step 1 create a list of questions' => "Крок 1: Создайте список вопросов",
     'Step 2 set test length' => "Крок 2: Вкажіть тривалість тестування",
     'Step 3 set your email' => "Крок 3: Вкажіть ваш email",
-    'Email address we will send data there to pass the test and view the results' => "Email адреса (туди ми відправимо данні для проходження тестування та перегляду результатів)",
+    'email address we will send data there to pass the test and view the results' => "Email адреса (туди ми відправимо данні для проходження тестування та перегляду результатів)",
     'enter your email' => "Введіть ваш email",
     'Nobody will know your email address' => "Ваш email адресу ніхто не буде знати.",
     'test length' => "Тривалість тестування",
+    'calculating time for testing' => "Обчислюється час, що залишився",
     'minutes' => "хвилин",
     'time for testing' => "Час на тестування",
     'finish test' => "Закінити тест",
@@ -36,5 +37,5 @@ return [
     'enter test description' => "Введіть опис теста",
     'description' => "Примітка",
     'copy' => "Скопіювати",
-    'fast test creation, 5 minutes without registration' => "Швидке створення, 5 хвилин, без реєстрації",
+    'fast test creation, 5 minutes without registration' => "Швидке створення, 5 хвилин, без реєстрації"
 ];
