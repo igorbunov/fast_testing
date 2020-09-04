@@ -7,6 +7,9 @@
     <meta name="keywords" content="@lang('view.index_keywords')" />
     <meta name="author" content="igorbunov.ua@gmail.com" />
     <meta name="description" content="@lang('view.index_description')" />
+
+    <meta name="yandex-verification" content="58ff2a834d30e37e" />
+
     <title>@lang('view.create your test')</title>
     
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
