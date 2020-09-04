@@ -38,4 +38,7 @@ return [
     'description' => "Description",
     'enter test description' => "Enter test description",
     'fast test creation, 5 minutes without registration' => "Fast test creation. Takes 5 minutes, without registration",
+
+    'index_keywords' => 'Test, Testing, Educational tests, Platform for creating tests, School testing, Testing without registration, Create a test without registration, Online testing',
+    'index_description' => 'This site allows you to create your own online testing very quickly and easily'
 ];
