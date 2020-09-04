@@ -20,7 +20,7 @@
                         </div>
                     </div>
 
-                    <p>Ответы:</p>
+                    <p>@lang('view.answers'):</p>
                     <div id="answers-container-{{ $question['id'] }}" class="answers-container">
                         @foreach ($question['answers'] as $answer)
                             <div

@@ -11,7 +11,7 @@
         </div>
     </div>
 
-    <p>Ответы:</p>
+    <p>@lang('view.answers'):</p>
     <div class="answers-container">
         <div class="input-group mb-3 edit-answer-container">
             <div class="input-group-prepend" >
