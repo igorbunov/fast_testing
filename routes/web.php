@@ -22,6 +22,9 @@ Route::middleware([\App\Http\Middleware\checkLang::class])->group(function () {
 
     Route::post('/get_answer_form', 'TestController@getAnswerForm');
     Route::post('/get_question_form', 'TestController@getNewQuestionForm');
+
+    Route::get('/feedback', 'FeedbackController@showForm');
+    Route::post('/add_feedback', 'FeedbackController@addFeedback');
 });
 
 Route::post('/set_lang', 'TestController@setLanguage');
