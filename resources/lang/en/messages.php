@@ -36,5 +36,9 @@ return [
     'test deactivated' => 'Test deactivated',
     'you must enter your email' => 'You must enter your email',
     'test is not active' => 'Test is not active',
-    'test completed' => 'Test completed'
+    'test completed' => 'Test completed',
+    'no message' => 'Empty message',
+    'unknown error' => 'Unknown error',
+    'feedback sended' => 'Feedback sended successfully',
+    'feedback not found' => 'Feedback not found'
 ];

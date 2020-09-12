@@ -12,33 +12,6 @@ use Illuminate\Support\Facades\Log;
 
 class TestController extends Controller
 {
-    public $translateValues = [];
-
-    public function prepareTranslate()
-    {
-        $this->translateValues = [
-            'time for testing' => __('view.time for testing'),
-            'minutes' => __('view.minutes'),
-            'calculating time for testing' => __('view.calculating time for testing'),
-            'you must specify the text of the question' => __('messages.you must specify the text of the question'),
-            'you must specify the response text' => __('messages.you must specify the response text'),
-            'you must provide the correct answer' => __('messages.you must provide the correct answer'),
-            'you must add at least one question' => __('messages.you must add at least one question'),
-            'confirmation' => __('messages.confirmation'),
-            'yes' => __('messages.yes'),
-            'no' => __('messages.no'),
-            'error' => __('messages.error'),
-            'close' => __('messages.close'),
-            'system message' => __('messages.system message'),
-            'test description required' => __('messages.test description required'),
-            'your email is empty or not valid' => __('messages.your email is empty or not valid'),
-            'do you really want to deactivate the test' => __('messages.do you really want to deactivate the test'),
-            'test deactivated' => __('messages.test deactivated'),
-            'you must enter your email' => __('messages.you must enter your email'),
-            'test completed' => __('messages.test completed'),
-        ];
-    }
-
     public function showResults($editSlug)
     {
         $test = Test::getByEditSlug($editSlug);
@@ -57,12 +30,11 @@ class TestController extends Controller
             $results[$i]->report = Result::getSuccessResult($result->id);
         }
 
-        $this->prepareTranslate();
 
         return view('results', [
             'info' => $info,
             'results' => $results,
-            'translateValues' => $this->translateValues
+            'translateValues' => (new TranslateController())->getValues()
         ]);
     }
 
@@ -104,12 +76,10 @@ class TestController extends Controller
             $questions[] = $questionRow;
         }
 
-        $this->prepareTranslate();
-
         return view('result', [
             'info' => $info,
             'questions' => $questions,
-            'translateValues' => $this->translateValues
+            'translateValues' => (new TranslateController())->getValues()
         ]);
     }
 
@@ -131,12 +101,28 @@ class TestController extends Controller
         }
     }
 
+    public function removeOldTests()
+    {
+        // TODO: do this if more 1 year
+        $oldTests = Test::getOldTests();
+
+        foreach ($oldTests as $test) {
+            $testId = (int) $test->id;
+            //TODO: delete
+        }
+        // select * from tests where updated_at + interval 1 year < now();
+
+//        select * from tests where id = 17;
+//        select * from questions where test_id = 17;
+//        select * from answers where question_id in (select id from questions where test_id = 17);
+//        select * from results where test_id = 17;
+//        select * from result_answers where result_id in (select id from results where test_id = 17);
+    }
+
     public function startNewTest()
     {
-        $this->prepareTranslate();
-
         return view('wizard.create_test', [
-            'translateValues' => $this->translateValues
+            'translateValues' => (new TranslateController())->getValues()
         ]);
     }
 
@@ -250,7 +236,6 @@ class TestController extends Controller
         }
 
         unset($question);
-        $this->prepareTranslate();
 
         return view('test', [ 
             'info' => [
@@ -261,7 +246,7 @@ class TestController extends Controller
                 'questions_count' => count($questions)
             ],
             'questions' => $questions,
-            'translateValues' => $this->translateValues
+            'translateValues' => (new TranslateController())->getValues()
         ]);
     }
 

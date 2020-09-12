@@ -96,6 +96,10 @@ body{
     }
 }
 
+input[type="text"], input[type="email"] {
+    width: 100%;
+}
+
 .results-preview-container{
     display: flex;
     align-items: baseline;
@@ -112,6 +116,9 @@ body{
     display: none;
 }
 .step4-container{
+    display: none;
+}
+#feedback-name-group{
     display: none;
 }
 

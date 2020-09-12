@@ -1,12 +1,14 @@
 $( document ).ready(function() {
-    if (window.location.pathname.indexOf('/t/') != -1) {
+    if (isPage('/t/')) {
         if (Test.isStarted()) {
             Test.updateData(Test.continue);
         }
-    } else if (window.location.pathname.indexOf('/new') != -1) {
+    } else if (isPage('/new')) {
         setTimeout(function () {
             $('#sub-question').hide();
         }, 300);
+    } else if (isPage('/feedback')) {
+        Feedback.subscribe();
     }
 
     $(function(){
@@ -26,6 +28,10 @@ $( document ).ready(function() {
         });
     });
 });
+
+function isPage(partUrl) {
+    return (window.location.pathname.indexOf(partUrl) != -1)
+}
 
 function confirmDialog(question, callback) {
     var me = this;
@@ -557,6 +563,43 @@ Results = (function () {
     return {
         show: function () {
             window.location.href = "/r/" + getSlug();
+        }
+    }
+})();
+
+Feedback = (function () {
+    return {
+        subscribe: function () {
+            var form = $("#feedback-form");
+
+            form.submit(function (e) {
+                e.preventDefault();
+
+                if (!validateEmail(form.find('input[name="email"]').val())) {
+                    errorDialog(window.translation['your email is empty or not valid']);
+                    return;
+                }
+
+                form.addClass('disabled-container');
+
+                simpleAjax({
+                    url: '/add_feedback',
+                    data: form.serialize(),
+                    success: function(data) {
+                        form.removeClass('disabled-container');
+
+                        if (data.success) {
+                            form.trigger('reset');
+
+                            autoHideAlert(data.message);
+                        } else {
+                            errorDialog(data.message);
+                        }
+                    }
+                });
+
+
+            });
         }
     }
 })();

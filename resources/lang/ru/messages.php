@@ -36,5 +36,9 @@ return [
     'test deactivated' => 'Тест деактивирован',
     'you must enter your email' => 'Необходимо ввести ваш email',
     'test is not active' => 'Тест не активен',
-    'test completed' => 'Тест завершен'
+    'test completed' => 'Тест завершен',
+    'no message' => 'Пустой текст',
+    'unknown error' => 'Неизвестная ошибка',
+    'feedback sended' => 'Отзыв успешно оставлен',
+    'feedback not found' => 'Отзыв не найден'
 ];

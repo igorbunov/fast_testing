@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class Test extends Model
@@ -119,5 +120,16 @@ class Test extends Model
         }
 
         return $res->toArray();
+    }
+
+    public static function getOldTests(): array
+    {
+        $res = DB::select("select * from tests where updated_at + interval 1 year < now()");
+
+        if (is_null($res)) {
+            return [];
+        }
+
+        return $res;
     }
 }

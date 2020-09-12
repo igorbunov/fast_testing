@@ -43,5 +43,6 @@ return [
     'index_description' => 'This site allows you to create your own online testing very quickly and easily',
 
     'enter your message' => 'Enter your message',
+    'enter your name' => 'Enter your name',
     'send' => 'Send',
 ];

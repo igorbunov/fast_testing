@@ -6,10 +6,11 @@ class EmailSender extends Controller
     private $toEmail;
     private $subject;
     private $headers;
-    private $fromEmail = 'igorbunov.ua@gmail.com';
+    private $fromEmail;
 
     public function __construct($toEmail, $subject)
     {
+        $this->fromEmail = env('CREATOR_EMAIL');
         $this->toEmail = $toEmail;
         $this->subject = $subject;
 
@@ -53,6 +54,24 @@ class EmailSender extends Controller
                 <div id="email-wrap">
                 <p>' . __('messages.someone passed your test their email') . ': ' . $email . '</p>
                 <p>' . __('messages.to view test results go here') . ': ' . $resultsLink . '</p>
+                </div>
+            </body>
+            </html>';
+
+        return mail($this->toEmail, $this->subject, $message, $this->headers);
+    }
+
+    public function sendFeedback(string $email, string $message): bool
+    {
+        $message = '<html>
+            <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+                <title></title>
+            </head>
+            <body>
+                <div>
+                <p>Email: ' . $email . '</p>
+                <p>Отзыв: ' . $message . '</p>
                 </div>
             </body>
             </html>';
