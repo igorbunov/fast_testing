@@ -153,7 +153,7 @@ Wizard = (function () {
 
                         if (!res.isValid) {
                             return;
-                        } else if (!isCorrectAnswerSet) {
+                        } else if (!isCorrectAnswerSet && Page.isQuestionare == 0) {
                             res.isValid = false;
                             res.msg = window.translation['you must provide the correct answer'];
 
@@ -189,9 +189,13 @@ Wizard = (function () {
                 data.test_length = $('#test-length').val();
                 data.description = $('#test-description').val();
 
-                if (data.description == '') {
-                    return errorDialog(window.translation['test description required']);
+                if (Page.isQuestionare == 1) {
+                    data.is_anonymous = ($("#is-anonymus-questionare").attr("checked") == 'checked');
                 }
+
+                // if (data.description == '') {
+                //     return errorDialog(window.translation['test description required']);
+                // }
             } else if (curStep == 2) {
                 data.email = $('#user-email').val();
 
@@ -246,8 +250,10 @@ QuestionEdit = (function() {
                         answerText: $(answer).find('input[type="text"]').val()
                     };
 
-                if ($(answer).find('input[type="checkbox"]')[0].checked) {
-                    answerItem.isTrue = true;
+                if (Page.isQuestionare == 0) {
+                    if ($(answer).find('input[type="checkbox"]')[0].checked) {
+                        answerItem.isTrue = true;
+                    }
                 }
 
                 params.answers.push(answerItem);
@@ -272,6 +278,9 @@ QuestionEdit = (function() {
 
             simpleAjax({
                 url: '/get_question_form',
+                data: {
+                    is_questionare: Page.isQuestionare
+                },
                 success: function(data) {
                     $(btn).attr('disabled', false);
 
@@ -300,6 +309,9 @@ AnswerEdit = (function() {
 
             simpleAjax({
                 url: '/get_answer_form',
+                data: {
+                    is_questionare: Page.isQuestionare
+                },
                 success: function(data) {
                     $(btn).removeClass('disabled-container');
 
@@ -360,7 +372,8 @@ TestEdit = (function () {
                 url: '/save_new',
                 data: {
                     params: JSON.stringify(data),
-                    sub_question: $('#sub-question').val()
+                    sub_question: $('#sub-question').val(),
+                    is_questionare: Page.isQuestionare
                 },
                 success: function(res) {
                     if (res.success) {
@@ -600,6 +613,18 @@ Feedback = (function () {
 
 
             });
+        }
+    }
+})();
+
+Page = (function () {
+    return {
+        isQuestionare: undefined,
+        showCreateTest: function () {
+            window.location.href = '/new';
+        },
+        showCreateQuestionare: function () {
+            window.location.href = '/new_questionare';
         }
     }
 })();

@@ -3,9 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::middleware([\App\Http\Middleware\checkLang::class])->group(function () {
-    Route::get('/', function () {
-        return view('main');
-    });
+    Route::view('/', 'main');
 
     Route::get('/t/{testSlug}', 'TestController@showTest');
     Route::get('/r/{editSlug}', 'TestController@showResults');
@@ -22,6 +20,8 @@ Route::middleware([\App\Http\Middleware\checkLang::class])->group(function () {
 
     Route::post('/get_answer_form', 'TestController@getAnswerForm');
     Route::post('/get_question_form', 'TestController@getNewQuestionForm');
+
+    Route::get('/new_questionare', 'QuestionareController@create');
 
     Route::get('/feedback', 'FeedbackController@showForm');
     Route::post('/add_feedback', 'FeedbackController@addFeedback');

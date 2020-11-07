@@ -122,6 +122,7 @@ class TestController extends Controller
     public function startNewTest()
     {
         return view('wizard.create_test', [
+            'isQuestionare' => 0,
             'translateValues' => (new TranslateController())->getValues()
         ]);
     }
@@ -146,6 +147,14 @@ class TestController extends Controller
         }
 
         $data = \json_decode($request->post('params'), true);
+        $isQuestionare = (int) $request->get('is_questionare', 0);
+
+        if ($isQuestionare == 1) {
+            $data['test_length'] = 10;
+            $data['is_anonymous'] = filter_var($data['is_anonymous'], FILTER_VALIDATE_BOOLEAN);
+        } else {
+            $data['is_anonymous'] = true;
+        }
 
         if (
             !is_array($data)
@@ -159,7 +168,7 @@ class TestController extends Controller
             ]);
         }
 
-        $test = Test::newTest($data['email'], $data['description'], $data['test_length']);
+        $test = Test::newTest($data['email'], $data['description'], $data['test_length'], $data['is_anonymous']);
 
         foreach ($data['questions'] as $question) {
             $newQ = Question::newQuestion($test['id'], $question['questionText']);
@@ -431,17 +440,31 @@ class TestController extends Controller
 
     public function getAnswerForm(Request $request)
     {
+        $isQuestionare = (int) $request->post('is_questionare', 0);
+
         return response()->json([
             'success' => true,
-            'html' => view('wizard.answer')->render()
+            'html' => view(
+                'wizard.answer',
+                [
+                    'isQuestionare' => $isQuestionare
+                ]
+            )->render()
         ]);
     }
     
     public function getNewQuestionForm(Request $request)
     {
+        $isQuestionare = (int) $request->post('is_questionare', 0);
+
         return response()->json([
             'success' => true,
-            'html' => view('wizard.question')->render()
+            'html' => view(
+                'wizard.question',
+                [
+                    'isQuestionare' => $isQuestionare
+                ]
+            )->render()
         ]);
     }
 }

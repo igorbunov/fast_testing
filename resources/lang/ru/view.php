@@ -4,7 +4,7 @@ return [
     'main' => 'Главная',
     'feedback' => 'Отзыв',
     'create your test' => 'Создай свой тест',
-    'create test' => "Создайте тест",
+    'create test' => "Онлайн тест",
     'start' => "Начать",
     'question' => "Вопрос",
     'enter question' => "Введите вопрос",
@@ -37,7 +37,7 @@ return [
     'description' => "Примечание",
     'copy' => "Скопировать",
     'enter test description' => "Введите описание теста",
-    'fast test creation, 5 minutes without registration' => "Быстрое создание тестов, за 5 минут, без регистрации.",
+    'fast test creation, 5 minutes without registration' => "Создайте свой онлайн тест за 5 минут",
 
     'index_keywords' => 'Онлайн тест, Тест, Тестирование, Обучающие тесты, Платформа для создания тестов, Школьное тестирование, Тестирование без регистрации, Создать тест без регистрации, Онлайн тестирование',
     'index_description' => 'Данный сайт позволяет очень быстро и просто сооздать свое онлайн тестирование',
@@ -45,4 +45,6 @@ return [
     'enter your message' => 'Введите свое сообщение',
     'enter your name' => 'Введите ваше имя',
     'send' => 'Отправить',
+    'create questionnaire' => 'Онлайн опрос',
+    'fast questionnaire creation, 5 minutes without registration' => 'Создайте свой онлайн опрос за 2 минуты',
 ];

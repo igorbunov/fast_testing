@@ -14,10 +14,11 @@ class Test extends Model
     const TEST_TIME_MINUTES = 'test_time_minutes';
     const IS_ACTIVE = 'is_active';
     const EMAIL = 'email';
+    const IS_ANONYMOUS = 'is_anonymous';
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
 
-    public static function newTest($email, $description, $testTime): Test
+    public static function newTest($email, $description, $testTime, bool $isAnonymous = false): Test
     {
         $editSlug = '';
         $testSlug = '';
@@ -36,7 +37,8 @@ class Test extends Model
             self::DESCRIPTION => $description,
             self::IS_ACTIVE => 1,
             self::TEST_TIME_MINUTES => $testTime,
-            self::EMAIL => $email
+            self::EMAIL => $email,
+            self::IS_ANONYMOUS => ($isAnonymous) ? 1 : 0
         ]);
     }
 

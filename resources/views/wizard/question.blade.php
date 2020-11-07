@@ -14,11 +14,13 @@
     <p>@lang('view.answers'):</p>
     <div class="answers-container">
         <div class="input-group mb-3 edit-answer-container">
+            @if ($isQuestionare == 0)
             <div class="input-group-prepend" >
                 <div class="input-group-text" data-toggle="tooltip" data-placement="right" title="@lang('view.is it correct answer')">
                     <input type="checkbox">
                 </div>
             </div>
+            @endif
 
             <input type="text" maxlength="200" placeholder="@lang('view.enter answer')" class="form-control" />
 
@@ -30,11 +32,13 @@
             </i>
         </div>
         <div class="input-group mb-3 edit-answer-container">
+            @if ($isQuestionare == 0)
             <div class="input-group-prepend" >
                 <div class="input-group-text" data-toggle="tooltip" data-placement="right" title="@lang('view.is it correct answer')">
                     <input type="checkbox">
                 </div>
             </div>
+            @endif
 
             <input type="text" maxlength="200" placeholder="@lang('view.enter answer')" class="form-control" />
 

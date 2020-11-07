@@ -1,6 +1,12 @@
 @extends('index')
 
 @section('content')
+    <script>
+        window.onload = function () {
+            Page.isQuestionare = '{{ $isQuestionare }}';
+        };
+    </script>
+
     <div class="container">
         <input type="text" id="sub-question" style="padding: 0;margin: 0;height: 1px;border: 0;" value="" />
 
@@ -24,11 +30,13 @@
                     <p>@lang('view.answers'):</p>
                     <div class="answers-container">
                         <div class="input-group mb-3 edit-answer-container">
+                            @if ($isQuestionare == 0)
                             <div class="input-group-prepend" >
                                 <div class="input-group-text" data-toggle="tooltip" data-placement="right" title="@lang('view.is it correct answer')">
                                     <input type="checkbox">
                                 </div>
                             </div>
+                            @endif
 
                             <input type="text" maxlength="200" placeholder="@lang('view.enter answer')" class="form-control" />
 
@@ -40,11 +48,13 @@
                             </i>
                         </div>
                         <div class="input-group mb-3 edit-answer-container">
+                            @if ($isQuestionare == 0)
                             <div class="input-group-prepend" >
                                 <div class="input-group-text" data-toggle="tooltip" data-placement="right" title="@lang('view.is it correct answer')">
                                     <input type="checkbox">
                                 </div>
                             </div>
+                            @endif
 
                             <input type="text" maxlength="200" placeholder="@lang('view.enter answer')" class="form-control" />
 
@@ -92,33 +102,51 @@
         </div>
 
         <div class="step2-container">
-            <h4 style="text-align: center;">@lang('view.Step 2 set test length')</h4>
+            @if ($isQuestionare == 0)
+                <h4 style="text-align: center;">@lang('view.Step 2 set test length')</h4>
+            @else
+                <h4 style="text-align: center;">@lang('view.Step 2 set questionare description')</h4>
+            @endif
 
-            <div class="form-group">
-                <label for="formControlRange">@lang('view.test length'): <span id="test-length-value">30</span> (@lang('view.minutes'))</label>
+            @if ($isQuestionare == 0)
+                <div class="form-group">
+                    <label for="formControlRange">@lang('view.test length'): <span id="test-length-value">30</span> (@lang('view.minutes'))</label>
 
-                <input type="range"
-                       list="tickmarks"
-                       class="form-control-range"
-                       id="test-length"
-                       min="5"
-                       max="180"
-                       step="5"
-                       name="test_time_minutes"
-                       value="30"
-                       oninput="setTestLength(this.value);">
+                    <input type="range"
+                           list="tickmarks"
+                           class="form-control-range"
+                           id="test-length"
+                           min="5"
+                           max="180"
+                           step="5"
+                           name="test_time_minutes"
+                           value="30"
+                           oninput="setTestLength(this.value);">
 
-                <datalist id="tickmarks">
-                    @for ($i = 10; $i <= 180; $i+=10)
-                        <option value="{{ $i }}">
-                    @endfor
-                </datalist>
-            </div>
+                    <datalist id="tickmarks">
+                        @for ($i = 10; $i <= 180; $i+=10)
+                            <option value="{{ $i }}">
+                        @endfor
+                    </datalist>
+                </div>
+            @else
+                <div style="text-align: left; margin: 40px 0 10px 0;  font-size: 18px;">
+                    <label for="is-anonymus-questionare">@lang('view.anonymus questionare?')</label>
+                    <input type="checkbox" id="is-anonymus-questionare" name="is_anonymus_questionare" checked="true">
+                    <small id="is-anonymus-questionare-help" class="form-text text-muted">@lang('view.users no need to specify their email')</small>
+                </div>
+            @endif
 
             <br/>
 
             <div class="form-group">
-                <label for="test-description">@lang('view.description will be seen by testers')</label>
+                <label for="test-description">
+                    @if ($isQuestionare == 0)
+                        @lang('view.description will be seen by testers')
+                    @else
+                        @lang('view.description will be seen by questionaries')
+                    @endif
+                </label>
                 <textarea
                         class="form-control"
                         id="test-description"
@@ -167,7 +195,13 @@
         </div>
 
         <div class="step4-container">
-            <h4 style="text-align: center;">@lang('view.congratulations you have successfully created a test')</h4>
+            <h4 style="text-align: center;">
+                @if ($isQuestionare == 0)
+                    @lang('view.congratulations you have successfully created a test')
+                @else
+                    @lang('view.congratulations you have successfully created a questionare')
+                @endif
+            </h4>
 
             <br/>
 

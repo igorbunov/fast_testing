@@ -4,7 +4,7 @@ return [
     'main' => 'Main',
     'feedback' => 'Feedback',
     'create your test' => "Create you'r test",
-    'create test' => "Create test",
+    'create test' => "Online test",
     'start' => "Start",
     'question' => "Question",
     'enter question' => "Enter question",
@@ -37,7 +37,7 @@ return [
     'copy' => "Copy",
     'description' => "Description",
     'enter test description' => "Enter test description",
-    'fast test creation, 5 minutes without registration' => "Quickly create online tests. It takes 5 minutes without registration",
+    'fast test creation, 5 minutes without registration' => "Create you'r online testing in 5 minutes",
 
     'index_keywords' => 'Online test, Test, Testing, Educational tests, Platform for creating tests, School testing, Testing without registration, Create a test without registration, Online testing',
     'index_description' => 'This site allows you to create your own online testing very quickly and easily',
@@ -45,4 +45,6 @@ return [
     'enter your message' => 'Enter your message',
     'enter your name' => 'Enter your name',
     'send' => 'Send',
+    'create questionnaire' => 'Online questionnaire',
+    'fast questionnaire creation, 5 minutes without registration' => 'Create you\'r online questionare in 2 minutes',
 ];

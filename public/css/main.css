@@ -169,3 +169,30 @@ input[type="text"], input[type="email"] {
 .flag-icon-ua {
     background-image: url('/img/ua.svg');
 }
+
+.create-blocks-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+    width: 630px;
+}
+.create-online-test-block,
+.create-online-questionnaire-block {
+    width: 250px;
+    box-shadow: 1px 1px 5px 1px #aeaeae;
+    border-radius: 5px;
+    padding: 20px;
+}
+.create-online-test-block:hover,
+.create-online-questionnaire-block:hover {
+    border: 1px solid #aeaeae;
+    padding: 19px;
+}
+.create-online-test-block > .card-text,
+.create-online-questionnaire-block > .card-text {
+    padding-left: 22px;
+    height: 100px;
+    text-align: left;
+    padding-top: 8px;
+    font-size: 15px;
+}
